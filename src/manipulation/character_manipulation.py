@@ -1,6 +1,7 @@
 from json import dumps, load
-from os.path import isfile
-from typing import Dict
+from os import makedirs
+from os.path import isfile, dirname
+from typing import Dict, Tuple
 
 from discord import Member, Guild
 
@@ -36,6 +37,7 @@ def _get_path_and_characters(author: Member, guild: Guild):
 
 
 def _store_characters(path: str, characters_list: Dict[str, Character]):
+    makedirs(dirname(path), exist_ok=True)
     if isfile(path):
         with open(path, 'w') as new_file:
             new_file.write(
@@ -47,4 +49,4 @@ def _store_characters(path: str, characters_list: Dict[str, Character]):
             new_file.write(
                 dumps({name: character.to_json() for name, character in
                        characters_list.items()})
-                )
+            )

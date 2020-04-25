@@ -2,11 +2,12 @@ import re
 
 from discord import Guild
 from discord.ext.commands import Cog, Context, command, BadArgument, \
-    MissingRequiredArgument
+    MissingRequiredArgument, Bot
 
 from errors.character import TwoManyCharacters, UnknownCharacters, \
     NoCharacters, CharacterAlreadyExist
 from src.classes.Character import Character
+from src.constants.CONSTANTS import RANKING, GLOBAL_RANKING
 from src.constants.REGEX import NAME_PATTERN, NAME_PATTERN_LINK
 from src.manipulation.character_manipulation import _get_path_and_characters, \
     _store_characters
@@ -15,14 +16,23 @@ from src.manipulation.context_manipulation import get_author_guild_from_context
 name_pattern = re.compile(NAME_PATTERN, flags=re.I)
 
 
-def is_name(name):
+def is_name(name: str):
     """For command annotation"""
     if not name_pattern.match(name):
         raise BadArgument
     return name
 
 
+def ranking_type(type_: str):
+    """For command annotation"""
+    if type_ not in RANKING:
+        raise BadArgument
+    return type_
+
+
 class Personnage(Cog):
+    bot: Bot
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -128,7 +138,7 @@ class Personnage(Cog):
         tu effectues cette commande. Tu peux avoir jusqu'à 3 personnages.
         """
         author, guild = get_author_guild_from_context(context)
-        _, characters = _get_path_and_characters(author, guild)
+        _, _, characters = _get_path_and_characters(author, guild)
 
         if len(characters) < 1:
             raise NoCharacters
@@ -154,7 +164,7 @@ class Personnage(Cog):
         lequel tu effectues cette commande.
         """
         author, guild = get_author_guild_from_context(context)
-        _, characters = _get_path_and_characters(author, guild)
+        _, _, characters = _get_path_and_characters(author, guild)
 
         if name not in characters:
             raise UnknownCharacters
@@ -183,8 +193,10 @@ class Personnage(Cog):
             )
 
     @command(name='classement', aliases=['leaderboard'], hidden=True)
-    async def leaderboard(self, context: Context):
-        guild: Guild = context.guild
+    async def leaderboard(self, context: Context, *, type_):
+        if type_ == GLOBAL_RANKING:
+            for guild in self.bot.guilds:
+                ...
         ...
 
 
