@@ -8,6 +8,7 @@ from discord.ext import commands
 from discord.ext.commands import Cog, Context
 
 from src.classes.Item import Item
+from src.constants.PATH import ITEM_NAME_PATH
 
 loot = re.compile(r'!item')
 item_name = re.compile(r'!name_item ([a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂ'
@@ -62,7 +63,7 @@ class Debug(Cog):
         await context.send(embed=Item(randint(1, 10)).embed)
 
     @commands.command(hidden=True)
-    async def name_item(self, context: Context, *commands: str):
+    async def name_item(self, context: Context, *command: str):
         """
         Channel name_item. Command : !name_item <Nom de l'objet>
 
@@ -79,7 +80,7 @@ class Debug(Cog):
             return await context.send(
                 'Le nom existe déjà :) Mais merci de votre participation !')
 
-        with open('data/items_name', 'a') as items_name:
+        with open(ITEM_NAME_PATH, 'a') as items_name:
             items_name.write(f'{match.group(1).lower()}\n')
         await context.send('Merci pour votre participation !')
 

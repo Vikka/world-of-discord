@@ -1,17 +1,18 @@
 import re
 
+from discord import Guild
 from discord.ext.commands import Cog, Context, command, BadArgument, \
     MissingRequiredArgument
 
-from errors.character import TwoManyCharacters, UnknownCharacters, NoCharacters, \
-    CharacterAlreadyExist
+from errors.character import TwoManyCharacters, UnknownCharacters, \
+    NoCharacters, CharacterAlreadyExist
 from src.classes.Character import Character
-from src.constants.REGEX import NAME_PATTERN
+from src.constants.REGEX import NAME_PATTERN, NAME_PATTERN_LINK
 from src.manipulation.character_manipulation import _get_path_and_characters, \
     _store_characters
 from src.manipulation.context_manipulation import get_author_guild_from_context
 
-name_pattern = re.compile(NAME_PATTERN)
+name_pattern = re.compile(NAME_PATTERN, flags=re.I)
 
 
 def is_name(name):
@@ -50,6 +51,28 @@ class Personnage(Cog):
         _store_characters(path, characters)
         await context.send(f'{name} créé·e avec succès !')
 
+    @create.error
+    async def create_error(self, context: Context, error):
+        if isinstance(error, BadArgument):
+            await context.send("Le format de nom n'est pas bon, désolé.\n"
+                               "Test le format de ton nom ici : "
+                               "https://regex101.com/r/GWsaBf/2\n"
+                               f"N'hésite pas à taper la commande \"!help créer\" "
+                               "pour avoir de l'aide.")
+        if isinstance(error, MissingRequiredArgument):
+            await context.send(
+                "Tu as oublié le prénom (tu peux aussi préciser le nom) !\n"
+                "N'hésite pas à taper la commande \"!help creer\" pour avoir "
+                "de l'aide.")
+        if isinstance(error, TwoManyCharacters):
+            await context.send(
+                "Tu ne peux créer que 3 personnages.\n"
+                "N'hésite pas à taper la commande \"!help creer\" pour avoir "
+                "de l'aide.")
+        if isinstance(error, CharacterAlreadyExist):
+            await context.send(
+                "Le personnage que tu souhaites créer existe déjà !")
+
     @command(name='supprimer', usage='<Prénom> | <Prénom Nom>',
              aliases=['suppr', 'delete', 'del'])
     async def delete(self, context: Context, *, name: is_name):
@@ -77,6 +100,25 @@ class Personnage(Cog):
         _store_characters(path, characters)
         await context.send(f'{name} supprimé·e avec succès !')
 
+    @delete.error
+    async def delete_error(self, context: Context, error):
+        if isinstance(error, BadArgument):
+            await context.send("Le format de nom n'est pas bon, désolé.\n"
+                               "Test le format de ton nom ici : "
+                               f"{NAME_PATTERN_LINK}\n"
+                               f"N'hésite pas à taper la commande "
+                               f"\"!help supprimer\" pour avoir de l'aide.")
+        if isinstance(error, UnknownCharacters):
+            await context.send(
+                "Le personnage est introuvable.\n"
+                "N'hésite pas à taper la commande \"!help supprimer\" pour "
+                "avoir de l'aide.")
+        if isinstance(error, MissingRequiredArgument):
+            await context.send(
+                "Tu as oublié le prénom exact (nom si il y a, aussi) !\n"
+                "N'hésite pas à taper la commande \"!help supprimer\" pour "
+                "avoir de l'aide.")
+
     @command(name='lister', aliases=['liste', 'list'])
     async def list(self, context: Context):
         """
@@ -95,46 +137,6 @@ class Personnage(Cog):
         await context.send(f'Voici la liste de tes personnages :\n\t'
                            f'{char_list}.')
 
-    @create.error
-    async def create_error(self, context: Context, error):
-        if isinstance(error, BadArgument):
-            await context.send("Le format de nom n'est pas bon, désolé.\n"
-                               "Test le format de ton nom ici : "
-                               "https://regex101.com/r/GWsaBf/2\n"
-                               f"N'hésite pas à taper la commande \"!help créer\" "
-                               "pour avoir de l'aide.")
-        if isinstance(error, MissingRequiredArgument):
-            await context.send(
-                "Tu as oublié le prénom (tu peux aussi préciser le nom) !\n"
-                "N'hésite pas à taper la commande \"!help creer\" pour avoir "
-                "de l'aide.")
-        if isinstance(error, TwoManyCharacters):
-            await context.send(
-                "Tu ne peux créer que 3 personnages.\n"
-                "N'hésite pas à taper la commande \"!help creer\" pour avoir "
-                "de l'aide.")
-        if isinstance(error, CharacterAlreadyExist):
-            await context.send(
-                "Le personnage que tu souhaites créer existe déjà !")
-    @delete.error
-    async def delete_error(self, context: Context, error):
-        if isinstance(error, BadArgument):
-            await context.send("Le format de nom n'est pas bon, désolé.\n"
-                           "Test le format de ton nom ici : "
-                           "https://regex101.com/r/GWsaBf/2\n"
-                           f"N'hésite pas à taper la commande "
-                           f"\"!help supprimer\" pour avoir de l'aide.")
-        if isinstance(error, UnknownCharacters):
-            await context.send(
-                "Le personnage est introuvable.\n"
-                "N'hésite pas à taper la commande \"!help supprimer\" pour "
-                "avoir de l'aide.")
-        if isinstance(error, MissingRequiredArgument):
-            await context.send(
-                "Tu as oublié le prénom exact (nom si il y a, aussi) !\n"
-                "N'hésite pas à taper la commande \"!help supprimer\" pour "
-                "avoir de l'aide.")
-
     @list.error
     async def list_error(self, context: Context, error):
         if isinstance(error, NoCharacters):
@@ -142,6 +144,48 @@ class Personnage(Cog):
                 "Tu n'a aucun personnage.\n"
                 "N'hésite pas à taper la commande \"!help Personnage\" pour "
                 "avoir de l'aide.")
+
+    @command(name='fiche', aliases=['sheet'])
+    async def character_sheet(self, context: Context, *, name: is_name):
+        """
+        Fiche du personnage.
+
+        Te permet d'afficher la fiche d'un te des personnage lié au serveur sur
+        lequel tu effectues cette commande.
+        """
+        author, guild = get_author_guild_from_context(context)
+        _, characters = _get_path_and_characters(author, guild)
+
+        if name not in characters:
+            raise UnknownCharacters
+
+        await context.send(f'', embed=characters[name].embed)
+
+    @character_sheet.error
+    async def character_sheet_error(self, context: Context, error):
+        if isinstance(error, MissingRequiredArgument):
+            await context.send(
+                "Tu as oublié le prénom exact (nom si il y a, aussi) !\n"
+                "N'hésite pas à taper la commande \"!help fiche\" pour "
+                "avoir de l'aide.")
+        if isinstance(error, UnknownCharacters):
+            await context.send(
+                "Le personnage est introuvable.\n"
+                "N'hésite pas à taper la commande \"!help fiche\" pour "
+                "avoir de l'aide.")
+        if isinstance(error, BadArgument):
+            await context.send(
+                "Le format de nom n'est pas bon, désolé.\n"
+                "Test le format de ton nom ici : "
+                f"{NAME_PATTERN_LINK}\n"
+                f"N'hésite pas à taper la commande "
+                f"\"!help supprimer\" pour avoir de l'aide."
+            )
+
+    @command(name='classement', aliases=['leaderboard'], hidden=True)
+    async def leaderboard(self, context: Context):
+        guild: Guild = context.guild
+        ...
 
 
 def setup(bot):

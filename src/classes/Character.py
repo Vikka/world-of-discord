@@ -10,7 +10,6 @@ from src.constants.ITEMS import WEAPON, HELMET, LEGS, BOOTS, COMMON
 
 @lru_cache(maxsize=None)
 def get_enemy_life(level):
-    # int((base*3 + level*4) * base *10/3)
     base = _get_base(level)
     return int(pow(base, 2) * 0.900900900 + level * base * 1.2012012)
 
@@ -97,7 +96,10 @@ class Character(metaclass=CharacterSingleton):
     def embed(self):
         embed = Embed(title=self._name)
         embed.add_field(name='Niveau', value=str(self._level))
-        embed.add_field(name='Expérience', value=f'{self._exp:n}')
+        embed.add_field(
+            name='Expérience',
+            value=f'{self._exp:n}/{get_enemy_life(self._level) * 20 * (5 if self._level > 1 else 1):n}'
+        )
         embed.add_field(name='Puissance',
                         value=f'{self._power:n}(+{self.power - self._power:n})')
         return embed

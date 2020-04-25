@@ -35,7 +35,7 @@ class Tutoriel(Cog):
 
     @command(name='tutoriel', usage='<n° de chapitre>',
              aliases=['tutorial', 'tuto'])
-    async def tutorial(self, context: Context, *, chapter: check_chapter = -1):
+    async def tutorial(self, context: Context, *, chapter: check_chapter = 0):
         """
         Permet de commencer le tutoriel pour jouer.
 

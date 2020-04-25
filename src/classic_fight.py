@@ -1,6 +1,6 @@
 from asyncio import sleep
 from time import time, strftime
-from typing import Tuple
+from typing import Tuple, Dict
 
 from discord import Member, Guild, Message, TextChannel
 from discord.utils import get
@@ -8,7 +8,7 @@ from discord.utils import get
 from errors.character import NoCharacters, NoLeader, CharactersLocked
 from src.classes.Character import Character, get_enemy_life, get_loot
 from src.constants.CHANNELS import CHANNEL_INFO_WOD
-from src.constants.CONSTANTS import ROUND_TIME
+from src.constants.FIGHT import ATTACK_SPEED, ROUND_TIME
 from src.manipulation.character_manipulation import get_leader, \
     _store_characters, _get_path_and_characters
 
@@ -22,7 +22,7 @@ def _init_fight_data(message: Message) -> Tuple[Member, Guild, TextChannel]:
     return author, guild, channel
 
 
-async def init_fight(author: Member, guild: Guild, channel: TextChannel) \
+async def init_fight(author: Member, guild: Guild) \
         -> Tuple[Character, str, dict]:
     path, characters = _get_path_and_characters(author, guild)
     if not characters:
@@ -36,11 +36,12 @@ async def init_fight(author: Member, guild: Guild, channel: TextChannel) \
     if leader.lock > time():
         leader.lock = int(time()) + ROUND_TIME
         _store_characters(path, characters)
+        raise CharactersLocked
     return leader, path, characters
 
 
 async def fight(fighter: Character, channel: TextChannel, author: Member,
-                path: str, characters, guild):
+                path: str, characters: Dict[str, Character]):
     print('fight')
     fighter.lock = int(time()) + ROUND_TIME
     _store_characters(path, characters)
@@ -50,11 +51,8 @@ async def fight(fighter: Character, channel: TextChannel, author: Member,
     print(f'{strftime("%D")}{author.display_name} hit')
     print(f'{time() < fighter.lock}, {time()}, {int(fighter.lock)}')
     while time() < fighter.lock:
-        _, characters = _get_path_and_characters(author, guild)
-        fighter = get_leader(characters)
-        assert fighter
         if next_hit >= time():
-            await sleep(1)
+            await sleep(ATTACK_SPEED)
             continue
         print(
             f'{strftime("%X")} {author.display_name} hit for {fighter.power} damages, {current - fighter.power} remaining.')
@@ -69,13 +67,13 @@ async def fight(fighter: Character, channel: TextChannel, author: Member,
                     f"{fighter._level} !",
                     embed=fighter.embed)
             _store_characters(path, characters)
-        next_hit = time() + 6
+        next_hit = time() + ATTACK_SPEED
 
 
 async def start_classic_fight(message: Message) -> None:
     author, guild, channel = _init_fight_data(message)
 
-    leader, path, characters = await init_fight(author, guild, channel)
+    leader, path, characters = await init_fight(author, guild)
     if not (leader and path and characters):
         return
-    await fight(leader, channel, author, path, characters, guild)
+    await fight(leader, channel, author, path, characters)
