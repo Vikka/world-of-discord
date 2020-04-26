@@ -121,7 +121,7 @@ class Character(metaclass=CharacterSingleton):
     @property
     def power(self):
         total = self._power
-        if not self._weapon:
+        if self._weapon:
             total += self._weapon.power
         if self.helmet:
             total += self.helmet.power
