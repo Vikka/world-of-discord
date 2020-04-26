@@ -61,7 +61,8 @@ class Personnage(Cog):
         if name in characters:
             raise CharacterAlreadyExist
 
-        characters[name] = Character(name)
+        id_ = f'{guild.id}-{author.id}-{name}'
+        characters[id_] = Character(id_, name)
         _store_characters(path, characters)
         await context.send(f'{name} créé·e avec succès !')
 
@@ -103,7 +104,8 @@ class Personnage(Cog):
         if name not in characters:
             raise UnknownCharacters
 
-        characters.pop(name)
+        id_ = f'{guild.id}-{author.id}-{name}'
+        characters.pop(id_)
         leader_flag = False
         for character in characters.values():
             if character._current:
@@ -149,7 +151,7 @@ class Personnage(Cog):
         if len(characters) < 1:
             raise NoCharacters
 
-        char_list = ',\n\t'.join(character for character in characters.keys())
+        char_list = ',\n\t'.join(character._name for character in characters.values())
         await context.send(f'Voici la liste de tes personnages :\n\t'
                            f'{char_list}.')
 
@@ -173,10 +175,11 @@ class Personnage(Cog):
         author, guild = get_author_guild_from_context(context)
         _, characters = _get_path_and_characters(author, guild)
 
-        if name not in characters:
+        id_ = f'{guild.id}-{author.id}-{name}'
+        if id_ not in characters:
             raise UnknownCharacters
 
-        await context.send(f'', embed=characters[name].embed)
+        await context.send(f'', embed=characters[id_].embed)
 
     @character_sheet.error
     async def character_sheet_error(self, context: Context, error):
@@ -222,10 +225,10 @@ class Personnage(Cog):
             embed.add_field(name='n°', value=str(1))
             embed.add_field(name='Nom', value=guild_list[0][0])
             embed.add_field(name='Exp max', value=guild_list[0][1])
-            names = tuple()
-            values = tuple()
-            for i, guild in enumerate(guild_list, start=1):
-                if i % 2 != 0:
+            names = 1
+            values = 1
+            for i, guild in enumerate(guild_list[1:], start=2):
+                if i % 2 == 0:
                     names = (str(i), guild[0], guild[1])
                 else:
                     values = (str(i), guild[0], guild[1])
@@ -233,7 +236,7 @@ class Personnage(Cog):
                     embed.add_field(name=names[1], value=values[1])
                     embed.add_field(name=names[2], value=values[2])
                     values = 0
-            if values == 0:
+            if values != 0:
                 embed.add_field(name=str(len(guild_list)), value='\u200b')
                 embed.add_field(name=guild_list[-1][0], value='\u200b')
                 embed.add_field(name=guild_list[-1][1], value='\u200b')

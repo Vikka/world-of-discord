@@ -52,7 +52,7 @@ async def fight(fighter: Character, channel: TextChannel, author: Member,
     print(f'{time() < fighter.lock}, {time()}, {int(fighter.lock)}')
     while time() < fighter.lock:
         if next_hit >= time():
-            await sleep(ATTACK_SPEED)
+            await sleep(ATTACK_SPEED/12)
             continue
         print(
             f'{strftime("%X")} {author.display_name} hit for {fighter.power} damages, {current - fighter.power} remaining.')

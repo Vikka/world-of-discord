@@ -17,17 +17,18 @@ def get_enemy_life(level):
 class CharacterSingleton(type):
     _instances = {}
 
-    def __call__(cls, name, *args, **kwargs):
-        if name not in cls._instances:
-            cls._instances[name] = \
-                super(CharacterSingleton, cls).__call__(name, *args, **kwargs)
+    def __call__(cls, id_, *args, **kwargs):
+        if id_ not in cls._instances:
+            cls._instances[id_] = \
+                super(CharacterSingleton, cls).__call__(id_, *args, **kwargs)
 
-        return cls._instances[name]
+        return cls._instances[id_]
 
 
 class Character(metaclass=CharacterSingleton):
     """Immutable Character class"""
     _name: str
+    id: str
     _power: int
     _level: int
     _exp: int
@@ -39,7 +40,8 @@ class Character(metaclass=CharacterSingleton):
     boots: Optional[Item]
     lock: int
 
-    def _create_character(self, name: str, power: int, level: int, exp: int,
+    def _create_character(self, id_: str, name: str, power: int, level: int,
+                          exp: int,
                           current: bool, lock: int,
                           total_exp: int = 0,
                           weapon: Optional[Item] = None,
@@ -50,6 +52,8 @@ class Character(metaclass=CharacterSingleton):
         """Create a Character instance."""
         if not isinstance(name, str):
             raise ValueError("'name' must be a string")
+        if not isinstance(id_, str):
+            raise ValueError("'id' must be a string")
         if not isinstance(power, int):
             raise ValueError("'power' must be a int")
         if not isinstance(level, int):
@@ -61,6 +65,7 @@ class Character(metaclass=CharacterSingleton):
         if not isinstance(lock, int):
             raise ValueError("'lock' must be a int")
 
+        self.id = id_
         self._name = name
         self._power = power
         self._level = level
@@ -73,7 +78,8 @@ class Character(metaclass=CharacterSingleton):
         self.boots = boots
         self.lock = lock
 
-    def __init__(self, name: str = '', level: int = 1, exp: int = 0,
+    def __init__(self, id_: str = '', name: str = '', level: int = 1,
+                 exp: int = 0,
                  json: Optional[dict] = None):
         """Create a Item instance."""
         if json:
@@ -83,12 +89,13 @@ class Character(metaclass=CharacterSingleton):
             legs = Item(json=json['legs']) if 'legs' in json else None
             boots = Item(json=json['boots']) if 'boots' in json else None
             lock = json['lock'] if 'lock' in json else 0
-            self._create_character(json['name'], json['power'], json['level'],
+            self._create_character(json['id'], json['name'], json['power'],
+                                   json['level'],
                                    json['exp'], json['current'], lock,
                                    total_exp, weapon, helmet, legs, boots)
             return
         power = _get_base(level)
-        self._create_character(name, power, level, exp, True, 0)
+        self._create_character(id_, name, power, level, exp, True, 0)
 
     def __repr__(self):
         """Create a string representation of the Character."""
@@ -105,7 +112,6 @@ class Character(metaclass=CharacterSingleton):
             get_enemy_life(self._level) * 20 * (5 if self._level > 1 else 1)
         embed = Embed(title=self._name)
         embed.add_field(name='Niveau', value=str(self._level))
-        embed.add_field(name='\u200b', value='\u200b')
         embed.add_field(
             name='Expérience',
             value=f'{self._exp:n}/{level_total_exp:n}'
@@ -138,6 +144,7 @@ class Character(metaclass=CharacterSingleton):
     def to_json(self):
         json = {
             'name': self._name,
+            'id': self.id,
             'current': self._current,
             'level': self._level,
             'exp': self._exp,

@@ -16,7 +16,7 @@ def _get_character(path: str) -> Dict[str, Character]:
             content = load(new_file)
     if not content:
         return {}
-    return {name: Character(name, json=character) for name, character in
+    return {id_: Character(id_, json=character) for id_, character in
             content.items()}
 
 
@@ -41,12 +41,12 @@ def _store_characters(path: str, characters_list: Dict[str, Character]):
     if isfile(path):
         with open(path, 'w') as new_file:
             new_file.write(
-                dumps({name: character.to_json() for name, character in
+                dumps({id_: character.to_json() for id_, character in
                        characters_list.items()})
             )
     else:
         with open(path, 'x') as new_file:
             new_file.write(
-                dumps({name: character.to_json() for name, character in
+                dumps({id_: character.to_json() for id_, character in
                        characters_list.items()})
             )
