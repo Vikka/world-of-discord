@@ -105,7 +105,7 @@ class Character(metaclass=CharacterSingleton):
             get_enemy_life(self._level) * 20 * (5 if self._level > 1 else 1)
         embed = Embed(title=self._name)
         embed.add_field(name='Niveau', value=str(self._level))
-        embed.add_field(name='', value='')
+        embed.add_field(name='\u200b', value='\u200b')
         embed.add_field(
             name='Expérience',
             value=f'{self._exp:n}/{level_total_exp:n}'
