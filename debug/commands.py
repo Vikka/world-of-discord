@@ -29,7 +29,7 @@ async def name_item_help(channel: TextChannel):
 
 class Debug(Cog):
     def __init__(self, bot):
-        with open('data/items_name') as items_name:
+        with open('data/items_name', encoding='utf_8') as items_name:
             self.names = items_name.read().splitlines()
         self.bot = bot
 

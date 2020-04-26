@@ -13,7 +13,7 @@ from src.constants.PATH import IMG_LINKS_PATH, ITEM_NAME_PATH
 
 setlocale(LC_ALL, '')
 
-with open(IMG_LINKS_PATH) as img_links_folder:
+with open(IMG_LINKS_PATH, encoding='utf-8') as img_links_folder:
     IMG_LINKS = img_links_folder.read().splitlines()
 
 
@@ -73,7 +73,7 @@ def _stats(level, rarity, base):
 
 
 def _get_name(rarity):
-    with open(ITEM_NAME_PATH) as items_name:
+    with open(ITEM_NAME_PATH, encoding='utf-8') as items_name:
         names = items_name.read().splitlines()
     return choice(names).capitalize()
 
