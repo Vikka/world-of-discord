@@ -1,1 +1,1 @@
-CHANNEL_INFO_WOD = 'info-wod'
+CHANNEL_INFO_WOD = 'événements'

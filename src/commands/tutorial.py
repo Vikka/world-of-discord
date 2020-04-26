@@ -1,6 +1,19 @@
 from discord.ext.commands import Cog, Context, command, BadArgument
 
+from src.commands.utils import in_command_channel
+
 TUTORIAL_CHAPTER = {
+    -1: "Configuration :\n"
+        "- Permettre au bot de lire tout les channels, et ce pour s'assurer "
+        "que tout les joueurs puissent jouer correctement (le bot lis les "
+        "messages pour activer les combats automatiquement,\n"
+        "- Créer une catégorie 'World of Discord', seule catégorie où le bot "
+        "sera habilité à écrire,\n"
+        "- Créer un channel 'évenements' où le bot pourra communiquer les news "
+        "du serveur et autres événements,\n"
+        "- Créer un channel 'commandes', seul endroit où les commandes du jeu "
+        "pourront être écrites. Aucun autre bot ne devrait pouvoir lire ce "
+        "channel, afin d'éviter tout conflit de commande.",
     0: "World of Discord est un MMORPG textuel auquel il est possible de "
        "jouer via discord. \n"
        "\n"
@@ -22,11 +35,14 @@ TUTORIAL_CHAPTER = {
 }
 
 
-def check_chapter(chapter: str):
-    conversion = 0
-    if not chapter.isdigit() or (conversion := int(chapter)) not in (0, 1):
+def check_chapter(chapter: str) -> int:
+    try:
+        chapter = int(chapter)
+    except:
         raise BadArgument
-    return conversion
+    if chapter not in range(-1, 2):
+        raise BadArgument
+    return chapter
 
 
 class Tutoriel(Cog):
@@ -34,7 +50,7 @@ class Tutoriel(Cog):
         self.bot = bot
 
     @command(name='tutoriel', usage='<n° de chapitre>',
-             aliases=['tutorial', 'tuto'])
+             aliases=['tutorial', 'tuto'], checks=[in_command_channel])
     async def tutorial(self, context: Context, *, chapter: check_chapter = 0):
         """
         Permet de commencer le tutoriel pour jouer.

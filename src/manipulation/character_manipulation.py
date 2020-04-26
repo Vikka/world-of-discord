@@ -31,7 +31,7 @@ def get_leader(characters):
 
 def _get_path_and_characters(author: Member, guild: Guild):
     file_name = f'{author.id}-{guild.id}.json'
-    path = USER_PATH.format(file_name)
+    path = USER_PATH.format(guild.id, file_name)
     characters = _get_character(path)
     return path, characters
 

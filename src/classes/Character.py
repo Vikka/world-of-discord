@@ -1,6 +1,6 @@
 from functools import lru_cache
 from pprint import pprint
-from typing import Optional
+from typing import Optional, Union
 
 from discord import Embed, TextChannel
 
@@ -30,6 +30,8 @@ class Character(metaclass=CharacterSingleton):
     _name: str
     _power: int
     _level: int
+    _exp: int
+    total_exp: int
     _current: bool
     _weapon: Optional[Item]
     helmet: Optional[Item]
@@ -39,6 +41,7 @@ class Character(metaclass=CharacterSingleton):
 
     def _create_character(self, name: str, power: int, level: int, exp: int,
                           current: bool, lock: int,
+                          total_exp: int = 0,
                           weapon: Optional[Item] = None,
                           helmet: Optional[Item] = None,
                           legs: Optional[Item] = None,
@@ -53,6 +56,8 @@ class Character(metaclass=CharacterSingleton):
             raise ValueError("'level' must be a int")
         if not isinstance(exp, int):
             raise ValueError("'exp' must be a int")
+        if not isinstance(total_exp, int):
+            raise ValueError("'total_exp' must be a int")
         if not isinstance(lock, int):
             raise ValueError("'lock' must be a int")
 
@@ -60,6 +65,7 @@ class Character(metaclass=CharacterSingleton):
         self._power = power
         self._level = level
         self._exp = exp
+        self.total_exp = total_exp
         self._current = current
         self._weapon = weapon
         self.helmet = helmet
@@ -71,6 +77,7 @@ class Character(metaclass=CharacterSingleton):
                  json: Optional[dict] = None):
         """Create a Item instance."""
         if json:
+            total_exp = json['total_exp'] if 'total_exp' in json else 0
             weapon = Item(json=json['weapon']) if 'weapon' in json else None
             helmet = Item(json=json['helmet']) if 'helmet' in json else None
             legs = Item(json=json['legs']) if 'legs' in json else None
@@ -78,7 +85,7 @@ class Character(metaclass=CharacterSingleton):
             lock = json['lock'] if 'lock' in json else 0
             self._create_character(json['name'], json['power'], json['level'],
                                    json['exp'], json['current'], lock,
-                                   weapon, helmet, legs, boots)
+                                   total_exp, weapon, helmet, legs, boots)
             return
         power = _get_base(level)
         self._create_character(name, power, level, exp, True, 0)
@@ -94,11 +101,18 @@ class Character(metaclass=CharacterSingleton):
 
     @property
     def embed(self):
+        level_total_exp = \
+            get_enemy_life(self._level) * 20 * (5 if self._level > 1 else 1)
         embed = Embed(title=self._name)
         embed.add_field(name='Niveau', value=str(self._level))
+        embed.add_field(name='', value='')
         embed.add_field(
             name='Expérience',
-            value=f'{self._exp:n}/{get_enemy_life(self._level) * 20 * (5 if self._level > 1 else 1):n}'
+            value=f'{self._exp:n}/{level_total_exp:n}'
+        )
+        embed.add_field(
+            name='Expérience totale',
+            value=f'{self.total_exp:n}'
         )
         embed.add_field(name='Puissance',
                         value=f'{self._power:n}(+{self.power - self._power:n})')
@@ -127,6 +141,7 @@ class Character(metaclass=CharacterSingleton):
             'current': self._current,
             'level': self._level,
             'exp': self._exp,
+            'total_exp': self.total_exp,
             'power': self._power,
             'weapon': self._weapon.to_json() if self._weapon else None,
             'helmet': self.helmet.to_json() if self.helmet else None,
@@ -140,6 +155,7 @@ class Character(metaclass=CharacterSingleton):
         total_xp = get_enemy_life(self._level) * 20
         if self._level > 1:
             total_xp *= 5
+        self.total_exp = self.total_exp + xp
         if self._exp + xp > total_xp:
             self.level_up()
             self._exp = self._exp + xp - total_xp

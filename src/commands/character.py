@@ -1,13 +1,14 @@
 import re
 
-from discord import Guild
+from discord import Guild, Embed
 from discord.ext.commands import Cog, Context, command, BadArgument, \
     MissingRequiredArgument, Bot
 
 from errors.character import TwoManyCharacters, UnknownCharacters, \
     NoCharacters, CharacterAlreadyExist
 from src.classes.Character import Character
-from src.constants.CONSTANTS import RANKING, GLOBAL_RANKING
+from src.commands.utils import no_direct_message, in_command_channel
+from src.constants.CONSTANTS import RANKING, GLOBAL_RANKING, DEFAULT_RANKING
 from src.constants.REGEX import NAME_PATTERN, NAME_PATTERN_LINK
 from src.manipulation.character_manipulation import _get_path_and_characters, \
     _store_characters
@@ -25,6 +26,8 @@ def is_name(name: str):
 
 def ranking_type(type_: str):
     """For command annotation"""
+    if not type_:
+        return DEFAULT_RANKING
     if type_ not in RANKING:
         raise BadArgument
     return type_
@@ -37,7 +40,8 @@ class Personnage(Cog):
         self.bot = bot
 
     @command(name='creer', usage='<Prénom> | <Prénom Nom>',
-             aliases=['créer', 'create'])
+             aliases=['créer', 'create'],
+             checks=[no_direct_message, in_command_channel])
     async def create(self, context: Context, *, name: is_name):
         """
         Enregistre un nouveau personnage.
@@ -84,7 +88,8 @@ class Personnage(Cog):
                 "Le personnage que tu souhaites créer existe déjà !")
 
     @command(name='supprimer', usage='<Prénom> | <Prénom Nom>',
-             aliases=['suppr', 'delete', 'del'])
+             aliases=['suppr', 'delete', 'del'],
+             checks=[no_direct_message, in_command_channel])
     async def delete(self, context: Context, *, name: is_name):
         """
         Supprime un de tes personnages.
@@ -129,7 +134,8 @@ class Personnage(Cog):
                 "N'hésite pas à taper la commande \"!help supprimer\" pour "
                 "avoir de l'aide.")
 
-    @command(name='lister', aliases=['liste', 'list'])
+    @command(name='lister', aliases=['liste', 'list'],
+             checks=[no_direct_message, in_command_channel])
     async def list(self, context: Context):
         """
         Liste vos personnages.
@@ -138,7 +144,7 @@ class Personnage(Cog):
         tu effectues cette commande. Tu peux avoir jusqu'à 3 personnages.
         """
         author, guild = get_author_guild_from_context(context)
-        _, _, characters = _get_path_and_characters(author, guild)
+        _, characters = _get_path_and_characters(author, guild)
 
         if len(characters) < 1:
             raise NoCharacters
@@ -155,7 +161,8 @@ class Personnage(Cog):
                 "N'hésite pas à taper la commande \"!help Personnage\" pour "
                 "avoir de l'aide.")
 
-    @command(name='fiche', aliases=['sheet'])
+    @command(name='fiche', aliases=['sheet'],
+             checks=[no_direct_message, in_command_channel])
     async def character_sheet(self, context: Context, *, name: is_name):
         """
         Fiche du personnage.
@@ -164,7 +171,7 @@ class Personnage(Cog):
         lequel tu effectues cette commande.
         """
         author, guild = get_author_guild_from_context(context)
-        _, _, characters = _get_path_and_characters(author, guild)
+        _, characters = _get_path_and_characters(author, guild)
 
         if name not in characters:
             raise UnknownCharacters
@@ -192,11 +199,46 @@ class Personnage(Cog):
                 f"\"!help supprimer\" pour avoir de l'aide."
             )
 
-    @command(name='classement', aliases=['leaderboard'], hidden=True)
-    async def leaderboard(self, context: Context, *, type_):
+    @command(name='classement', aliases=['leaderboard'], hidden=True,
+             checks=[no_direct_message, in_command_channel])
+    async def leaderboard(self, context: Context, *, type_:ranking_type):
         if type_ == GLOBAL_RANKING:
+            if not self.bot.guilds:
+                return
+            guild_list = list()
             for guild in self.bot.guilds:
-                ...
+                max_exp = 0
+                for member in guild.members:
+                    path, characters = _get_path_and_characters(member, guild)
+                    tmp_exp = 0
+                    for character in characters.values():
+                        if character.total_exp > tmp_exp:
+                            tmp_exp = character.total_exp
+                    if tmp_exp > max_exp:
+                        max_exp = tmp_exp
+                guild_list.append((guild.name, max_exp))
+            guild_list.sort(key=lambda x: x[1], reverse=True)
+            embed = Embed(title='Classement des Guildes')
+            embed.add_field(name='n°', value=str(1))
+            embed.add_field(name='Nom', value=guild_list[0][0])
+            embed.add_field(name='Exp max', value=guild_list[0][1])
+            names = tuple()
+            values = tuple()
+            for i, guild in enumerate(guild_list, start=1):
+                if i % 2 != 0:
+                    names = (str(i), guild[0], guild[1])
+                else:
+                    values = (str(i), guild[0], guild[1])
+                    embed.add_field(name=names[0], value=values[0])
+                    embed.add_field(name=names[1], value=values[1])
+                    embed.add_field(name=names[2], value=values[2])
+                    values = 0
+            if values == 0:
+                embed.add_field(name=str(len(guild_list)), value='\u200b')
+                embed.add_field(name=guild_list[-1][0], value='\u200b')
+                embed.add_field(name=guild_list[-1][1], value='\u200b')
+            await context.send(embed=embed)
+
         ...
 
 
