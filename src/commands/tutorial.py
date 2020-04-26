@@ -9,7 +9,7 @@ TUTORIAL_CHAPTER = {
         "messages pour activer les combats automatiquement,\n"
         "- Créer une catégorie 'World of Discord', seule catégorie où le bot "
         "sera habilité à écrire,\n"
-        "- Créer un channel 'évenements' où le bot pourra communiquer les news "
+        "- Créer un channel 'événements' où le bot pourra communiquer les news "
         "du serveur et autres événements,\n"
         "- Créer un channel 'commandes', seul endroit où les commandes du jeu "
         "pourront être écrites. Aucun autre bot ne devrait pouvoir lire ce "
