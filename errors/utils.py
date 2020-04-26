@@ -7,3 +7,7 @@ class NotInCommandChannel(CommandError):
 
 class IsDMChannel(CommandError):
     pass
+
+
+class NotAdmin(CommandError):
+    pass
