@@ -1,10 +1,10 @@
 import os
 
-from discord import DMChannel, Member
+from discord import DMChannel, Member, Guild
 from discord.ext.commands import Context
 from dotenv import load_dotenv
 
-from errors.utils import NotInCommandChannel, NotAdmin
+from errors.utils import NotInCommandChannel, NotAdmin, NotOwner
 
 load_dotenv()
 ADMIN = int(os.getenv('ADMIN'))
@@ -27,4 +27,12 @@ def is_admin(context: Context) -> bool:
     author: Member = context.author
     if author.id != ADMIN:
         raise NotAdmin
+    return True
+
+
+def is_owner(context: Context) -> bool:
+    author: Member = context.author
+    guild: Guild = context.guild
+    if author != guild.owner:
+        raise NotOwner
     return True

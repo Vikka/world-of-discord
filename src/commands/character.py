@@ -1,6 +1,5 @@
 import re
 
-from discord import Guild, Embed
 from discord.ext.commands import Cog, Context, command, BadArgument, \
     MissingRequiredArgument, Bot
 
@@ -13,6 +12,7 @@ from src.constants.REGEX import NAME_PATTERN, NAME_PATTERN_LINK
 from src.manipulation.character_manipulation import _get_path_and_characters, \
     _store_characters
 from src.manipulation.context_manipulation import get_author_guild_from_context
+from src.manipulation.leaderboard_manipulation import global_leaderboard
 
 name_pattern = re.compile(NAME_PATTERN, flags=re.I)
 
@@ -169,8 +169,8 @@ class Personnage(Cog):
         """
         Fiche du personnage.
 
-        Te permet d'afficher la fiche d'un te des personnage lié au serveur sur
-        lequel tu effectues cette commande.
+        Te permet d'afficher la fiche d'un personnage lié au serveur sur lequel
+        tu effectues cette commande.
         """
         author, guild = get_author_guild_from_context(context)
         _, characters = _get_path_and_characters(author, guild)
@@ -206,39 +206,8 @@ class Personnage(Cog):
              checks=[no_direct_message, in_command_channel])
     async def leaderboard(self, context: Context, *, type_:ranking_type):
         if type_ == GLOBAL_RANKING:
-            if not self.bot.guilds:
-                return
-            guild_list = list()
-            for guild in self.bot.guilds:
-                max_exp = 0
-                for member in guild.members:
-                    path, characters = _get_path_and_characters(member, guild)
-                    tmp_exp = 0
-                    for character in characters.values():
-                        tmp_exp = max(character.total_exp, tmp_exp)
-                    max_exp = max(tmp_exp, max_exp)
-                guild_list.append((guild.name, max_exp))
-            guild_list.sort(key=lambda x: x[1], reverse=True)
-            embed = Embed(title='Classement des Guildes')
-            embed.add_field(name='n°', value=str(1))
-            embed.add_field(name='Nom', value=guild_list[0][0])
-            embed.add_field(name='Exp max', value=guild_list[0][1])
-            names = 1
-            complet = True
-            for i, guild in enumerate(guild_list[1:], start=2):
-                if i % 2 == 0:
-                    names = (str(i), guild[0], guild[1])
-                    complet = False
-                    continue
-                embed.add_field(name=names[0], value=str(i))
-                embed.add_field(name=names[1], value=guild[0])
-                embed.add_field(name=names[2], value=guild[1])
-                complet = True
-            if not complet:
-                embed.add_field(name=names[0], value='\u200b')
-                embed.add_field(name=names[1], value='\u200b')
-                embed.add_field(name=names[2], value='\u200b')
-            await context.send(embed=embed)
+            guilds = self.bot.guilds
+            await global_leaderboard(context, guilds)
 
         ...
 

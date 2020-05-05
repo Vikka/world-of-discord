@@ -11,3 +11,6 @@ class IsDMChannel(CommandError):
 
 class NotAdmin(CommandError):
     pass
+
+class NotOwner(CommandError):
+    pass

@@ -1,7 +1,15 @@
-class NoGuildError(Exception):
+class GuildError(Exception):
     """The base exception type for errors that involve errors
-    regarding unknown guild for a user.
+    regarding guilds.
 
     This inherits from :exc:`Exception`.
     """
+    pass
+
+
+class NoGuildError(GuildError):
+    pass
+
+
+class ChannelAlreadyExist(GuildError):
     pass
