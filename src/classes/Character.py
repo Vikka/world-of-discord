@@ -20,12 +20,14 @@ class CharacterSingleton(type):
 
     def __call__(cls, id_, *args, **kwargs):
         if id_ not in cls._instances:
-            instance = super(CharacterSingleton, cls).__call__(id_, *args, **kwargs)
+            instance = super(CharacterSingleton, cls).__call__(id_, *args,
+                                                               **kwargs)
             weak_instance = weakref.ref(instance)
             cls._instances[id_] = weak_instance
         else:
             instance = cls._instances[id_]()
         return instance
+
 
 class Character(metaclass=CharacterSingleton):
     """Immutable Character class"""
@@ -43,8 +45,7 @@ class Character(metaclass=CharacterSingleton):
     lock: int
 
     def _create_character(self, id_: str, name: str, power: int, level: int,
-                          exp: int,
-                          current: bool, lock: int,
+                          exp: int, current: bool, lock: int, class_: str,
                           total_exp: int = 0,
                           weapon: Optional[Item] = None,
                           helmet: Optional[Item] = None,
@@ -79,9 +80,10 @@ class Character(metaclass=CharacterSingleton):
         self.legs = legs
         self.boots = boots
         self.lock = lock
+        self.class_ = class_
 
     def __init__(self, id_: str = '', name: str = '', level: int = 1,
-                 exp: int = 0,
+                 exp: int = 0, class_: str = "Guerrier",
                  json: Optional[dict] = None):
         """Create a Item instance."""
         if json:
@@ -91,13 +93,18 @@ class Character(metaclass=CharacterSingleton):
             legs = Item(json=json['legs']) if 'legs' in json else None
             boots = Item(json=json['boots']) if 'boots' in json else None
             lock = json['lock'] if 'lock' in json else 0
+            class_ = json['class'] if 'class' in json else "Guerrier"
             self._create_character(json['id'], json['name'], json['power'],
                                    json['level'],
                                    json['exp'], json['current'], lock,
-                                   total_exp, weapon, helmet, legs, boots)
+                                   class_, total_exp, weapon, helmet, legs,
+                                   boots)
             return
         power = _get_base(level)
-        self._create_character(id_, name, power, level, exp, True, 0)
+        self._create_character(id_, name, power, level, exp,
+                               current=True,
+                               lock=0,
+                               class_=class_)
 
     def __repr__(self):
         """Create a string representation of the Character."""
@@ -113,6 +120,7 @@ class Character(metaclass=CharacterSingleton):
         level_total_exp = \
             get_enemy_life(self._level) * 20 * (5 if self._level > 1 else 1)
         embed = Embed(title=self._name)
+        embed.add_field(name='Classe', value=str(self.class_))
         embed.add_field(name='Niveau', value=str(self._level))
         embed.add_field(
             name='Expérience',
@@ -148,6 +156,7 @@ class Character(metaclass=CharacterSingleton):
             'name': self._name,
             'id': self.id,
             'current': self._current,
+            'class': self.class_,
             'level': self._level,
             'exp': self._exp,
             'total_exp': self.total_exp,
