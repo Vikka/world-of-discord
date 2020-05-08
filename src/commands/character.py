@@ -17,7 +17,7 @@ from src.manipulation.leaderboard_manipulation import global_leaderboard
 name_pattern = re.compile(NAME_PATTERN, flags=re.I)
 
 
-def is_name(name: str):
+def is_name(name: str) -> str:
     """For command annotation"""
     if not name_pattern.match(name):
         raise BadArgument
@@ -57,7 +57,7 @@ class Personnage(Cog):
 
         for character in characters.values():
             character._current = False
-
+        name = name.lower().capitalize()
         if name in characters:
             raise CharacterAlreadyExist
 
@@ -101,10 +101,10 @@ class Personnage(Cog):
         author, guild = get_author_guild_from_context(context)
         path, characters = _get_path_and_characters(author, guild)
 
-        if name not in characters:
+        id_ = f'{guild.id}-{author.id}-{name}'
+        if id_ not in characters:
             raise UnknownCharacters
 
-        id_ = f'{guild.id}-{author.id}-{name}'
         characters.pop(id_)
         leader_flag = False
         for character in characters.values():

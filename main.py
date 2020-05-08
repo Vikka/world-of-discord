@@ -32,10 +32,9 @@ bot: CustomBot = CustomBot(command_prefix=COMMAND_PREFIX, case_insensitive=True)
 async def on_ready():
     print(f'{bot.user.name} is connected')
     while True:
-        print(Character._instances)
         Character._instances = \
             {key: ref for key, ref in Character._instances.items() if ref()}
-
+        print(Character._instances)
         activity = Game(f'{len(Character._instances)} active players')
         await bot.change_presence(activity=activity)
         await sleep(12)
