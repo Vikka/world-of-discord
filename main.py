@@ -1,11 +1,13 @@
 # bot.py
 import os
+from asyncio import sleep
 
-from discord import Message, DMChannel
+from discord import Message, DMChannel, Game, Status
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
 
 # this specifies what extensions to load when the bot starts up
+from src.classes.Character import Character
 from src.classic_fight import start_classic_fight
 
 startup_extensions = ['src.commands.tutorial', 'src.commands.character',
@@ -17,12 +19,26 @@ if os.getenv('DEBUG') == 'True':
     startup_extensions.append("debug.commands")
 
 COMMAND_PREFIX = os.getenv('COMMAND_PREFIX')
-bot: Bot = Bot(command_prefix=COMMAND_PREFIX, case_insensitive=True)
+
+
+class CustomBot(Bot):
+    maintenance: True
+
+
+bot: CustomBot = CustomBot(command_prefix=COMMAND_PREFIX, case_insensitive=True)
 
 
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} is connected')
+    while True:
+        print(Character._instances)
+        Character._instances = \
+            {key: ref for key, ref in Character._instances.items() if ref()}
+
+        activity = Game(f'{len(Character._instances)} active players')
+        await bot.change_presence(activity=activity)
+        await sleep(12)
 
 
 async def stop_trigger(message):

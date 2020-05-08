@@ -1,3 +1,4 @@
+import weakref
 from functools import lru_cache
 from pprint import pprint
 from typing import Optional, Union
@@ -19,11 +20,12 @@ class CharacterSingleton(type):
 
     def __call__(cls, id_, *args, **kwargs):
         if id_ not in cls._instances:
-            cls._instances[id_] = \
-                super(CharacterSingleton, cls).__call__(id_, *args, **kwargs)
-
-        return cls._instances[id_]
-
+            instance = super(CharacterSingleton, cls).__call__(id_, *args, **kwargs)
+            weak_instance = weakref.ref(instance)
+            cls._instances[id_] = weak_instance
+        else:
+            instance = cls._instances[id_]()
+        return instance
 
 class Character(metaclass=CharacterSingleton):
     """Immutable Character class"""

@@ -68,6 +68,7 @@ async def fight(fighter: Character, channel: TextChannel, author: Member,
                     embed=fighter.embed)
             _store_characters(path, characters)
         next_hit = time() + ATTACK_SPEED
+    del fighter
 
 
 async def start_classic_fight(message: Message) -> None:
