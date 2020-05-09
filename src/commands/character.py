@@ -150,7 +150,6 @@ class Personnage(Cog):
 
         if len(characters) < 1:
             raise NoCharacters
-
         char_list = ',\n\t'.join(character._name for character in characters.values())
         await context.send(f'Voici la liste de tes personnages :\n\t'
                            f'{char_list}.')

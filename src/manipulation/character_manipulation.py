@@ -9,6 +9,11 @@ from src.classes.Character import Character
 from src.constants.PATH import USER_PATH
 
 
+def clear_character_instances():
+    Character._instances = \
+        {key: ref for key, ref in Character._instances.items() if ref()}
+
+
 def _get_character(path: str) -> Dict[str, Character]:
     content = {}
     if isfile(path):

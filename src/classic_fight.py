@@ -61,14 +61,13 @@ async def fight(fighter: Character, channel: TextChannel, author: Member,
         else:
             current = life
             await get_loot(fighter, channel)
+            _store_characters(path, characters)
             if fighter.gain_xp(life) and channel:
                 await channel.send(
                     f"{fighter._name} vient d'atteindre le niveau "
                     f"{fighter._level} !",
                     embed=fighter.embed)
-            _store_characters(path, characters)
         next_hit = time() + ATTACK_SPEED
-    del fighter
 
 
 async def start_classic_fight(message: Message) -> None:

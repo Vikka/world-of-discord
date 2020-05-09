@@ -7,6 +7,7 @@ from discord import Embed, TextChannel
 
 from src.classes.Item import _get_base, Item
 from src.constants.ITEMS import WEAPON, HELMET, LEGS, BOOTS, COMMON
+from src.manipulation.character_manipulation import clear_character_instances
 
 
 @lru_cache(maxsize=None)
@@ -19,6 +20,7 @@ class CharacterSingleton(type):
     _instances = {}
 
     def __call__(cls, id_, *args, **kwargs):
+        clear_character_instances()
         if id_ not in cls._instances:
             instance = super(CharacterSingleton, cls).__call__(id_, *args, **kwargs)
             weak_instance = weakref.ref(instance)
