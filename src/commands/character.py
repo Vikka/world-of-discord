@@ -52,7 +52,7 @@ class Personnage(Cog):
         author, guild = get_author_guild_from_context(context)
         path, characters = _get_path_and_characters(author, guild)
 
-        if len(characters) > 2:
+        if len(characters) > 0:
             raise TwoManyCharacters
 
         for character in characters.values():
@@ -81,7 +81,7 @@ class Personnage(Cog):
                 "de l'aide.")
         if isinstance(error, TwoManyCharacters):
             await context.send(
-                "Tu ne peux créer que 3 personnages.\n"
+                "Tu ne peux créer qu'un seul personnage.\n"
                 "N'hésite pas à taper la commande \"!help creer\" pour avoir "
                 "de l'aide.")
         if isinstance(error, CharacterAlreadyExist):

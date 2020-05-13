@@ -1,17 +1,13 @@
 from json import dumps, load
 from os import makedirs
 from os.path import isfile, dirname
-from typing import Dict, Tuple
+from typing import Dict, Tuple, TYPE_CHECKING
 
 from discord import Member, Guild
 
-from src.classes.Character import Character
 from src.constants.PATH import USER_PATH
 
-
-def clear_character_instances():
-    Character._instances = \
-        {key: ref for key, ref in Character._instances.items() if ref()}
+from src.classes.Character import Character
 
 
 def _get_character(path: str) -> Dict[str, Character]:

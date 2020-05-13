@@ -7,9 +7,8 @@ from discord.ext.commands import Bot
 from dotenv import load_dotenv
 
 # this specifies what extensions to load when the bot starts up
-from src.classes.Character import Character
+from src.classes.Character import Character, clear_character_instances
 from src.classic_fight import start_classic_fight
-from src.manipulation.character_manipulation import clear_character_instances
 
 startup_extensions = ['src.commands.tutorial', 'src.commands.character',
                       'src.commands.admin']
@@ -33,7 +32,7 @@ bot: CustomBot = CustomBot(command_prefix=COMMAND_PREFIX, case_insensitive=True)
 async def on_ready():
     print(f'{bot.user.name} is connected')
     while True:
-        clear_character_instances()
+        clear_character_instances(Character)
         print(Character._instances)
         activity = Game(f'{len(Character._instances)} active players')
         await bot.change_presence(activity=activity)

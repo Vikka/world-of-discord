@@ -1,13 +1,12 @@
 import weakref
 from functools import lru_cache
 from pprint import pprint
-from typing import Optional, Union
+from typing import Optional
 
 from discord import Embed, TextChannel
 
 from src.classes.Item import _get_base, Item
 from src.constants.ITEMS import WEAPON, HELMET, LEGS, BOOTS, COMMON
-from src.manipulation.character_manipulation import clear_character_instances
 
 
 @lru_cache(maxsize=None)
@@ -16,18 +15,25 @@ def get_enemy_life(level):
     return int(pow(base, 2) * 0.900900900 + level * base * 1.2012012)
 
 
+def clear_character_instances(cls):
+    cls._instances = \
+        {key: ref for key, ref in cls._instances.items() if ref()}
+
+
 class CharacterSingleton(type):
     _instances = {}
 
     def __call__(cls, id_, *args, **kwargs):
-        clear_character_instances()
+        clear_character_instances(Character)
         if id_ not in cls._instances:
-            instance = super(CharacterSingleton, cls).__call__(id_, *args, **kwargs)
+            instance = super(CharacterSingleton, cls).__call__(id_, *args,
+                                                               **kwargs)
             weak_instance = weakref.ref(instance)
             cls._instances[id_] = weak_instance
         else:
             instance = cls._instances[id_]()
         return instance
+
 
 class Character(metaclass=CharacterSingleton):
     """Immutable Character class"""
@@ -88,10 +94,14 @@ class Character(metaclass=CharacterSingleton):
         """Create a Item instance."""
         if json:
             total_exp = json['total_exp'] if 'total_exp' in json else 0
-            weapon = Item(json=json['weapon']) if 'weapon' in json else None
-            helmet = Item(json=json['helmet']) if 'helmet' in json else None
-            legs = Item(json=json['legs']) if 'legs' in json else None
-            boots = Item(json=json['boots']) if 'boots' in json else None
+            weapon = Item(json=json['weapon']) if 'weapon' in json \
+                                                  and json['weapon'] else None
+            helmet = Item(json=json['helmet']) if 'helmet' in json \
+                                                  and json['helmet'] else None
+            legs = Item(json=json['legs']) if 'legs' in json \
+                                              and json['legs'] else None
+            boots = Item(json=json['boots']) if 'boots' in json \
+                                                and json['boots'] else None
             lock = json['lock'] if 'lock' in json else 0
             self._create_character(json['id'], json['name'], json['power'],
                                    json['level'],
