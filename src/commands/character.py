@@ -10,10 +10,10 @@ from src.classes.Character import Character
 from src.commands.utils import no_direct_message, in_command_channel
 from src.constants.CONSTANTS import RANKING, GLOBAL_RANKING, DEFAULT_RANKING
 from src.constants.REGEX import NAME_PATTERN, NAME_PATTERN_LINK
-from src.manipulation.character_manipulation import _get_path_and_characters, \
+from src.manipulation.character_manipulation import get_path_and_characters, \
     _store_characters, get_leader
 from src.manipulation.context_manipulation import get_author_guild_from_context
-from src.manipulation.leaderboard_manipulation import global_leaderboard
+from src.manipulation.leaderboard.global_leaderboard import global_leaderboard
 
 name_pattern = re.compile(NAME_PATTERN, flags=re.I)
 
@@ -24,7 +24,7 @@ def is_name(name: str) -> str:
         return ''
     if not name_pattern.match(name):
         raise BadArgument
-    return name
+    return name.lower().capitalize()
 
 
 def ranking_type(type_: str):
@@ -34,6 +34,12 @@ def ranking_type(type_: str):
     if type_ not in RANKING:
         raise BadArgument
     return type_
+
+
+def _init_data(context: Context):
+    author, guild = get_author_guild_from_context(context)
+    path, characters = get_path_and_characters(author, guild)
+    return author, guild, path, characters
 
 
 class Personnage(Cog):
@@ -50,16 +56,15 @@ class Personnage(Cog):
         Enregistre un nouveau personnage.
 
         Te permet de créer un personnage lié au serveur sur lequel tu
-        effectues cette commande. Tu peux créer jusqu'à 3 personnages.
+        effectues cette commande. Tu peux créer jusqu'à 0 personnages.
         """
-        author, guild = get_author_guild_from_context(context)
-        path, characters = _get_path_and_characters(author, guild)
+        author, guild, path, characters = _init_data(context)
 
         if len(characters) > 0:
             raise TwoManyCharacters
 
         for character in characters.values():
-            character._current = False
+            character.is_leader = False
         name = name.lower().capitalize()
         if name in characters:
             raise CharacterAlreadyExist
@@ -101,8 +106,7 @@ class Personnage(Cog):
         Te permet de supprimer un de tes personnages lié au serveur sur lequel
         tu effectues cette commande. Tu peux avoir jusqu'à 3 personnages.
         """
-        author, guild = get_author_guild_from_context(context)
-        path, characters = _get_path_and_characters(author, guild)
+        author, guild, path, characters = _init_data(context)
 
         id_ = f'{guild.id}-{author.id}-{name}'
         if id_ not in characters:
@@ -111,11 +115,11 @@ class Personnage(Cog):
         characters.pop(id_)
         leader_flag = False
         for character in characters.values():
-            if character._current:
+            if character.is_leader:
                 leader_flag = True
                 break
         if not leader_flag and characters:
-            list(characters.values())[0]._current = True
+            list(characters.values())[0].is_leader = True
 
         _store_characters(path, characters)
         await context.send(f'{name} supprimé·e avec succès !')
@@ -148,8 +152,7 @@ class Personnage(Cog):
         Te permet de supprimer un de tes personnages lié au serveur sur lequel
         tu effectues cette commande. Tu peux avoir jusqu'à 3 personnages.
         """
-        author, guild = get_author_guild_from_context(context)
-        _, characters = _get_path_and_characters(author, guild)
+        author, guild, _, characters = _init_data(context)
 
         if len(characters) < 1:
             raise NoCharacters
@@ -176,8 +179,8 @@ class Personnage(Cog):
         Te permet d'afficher la fiche d'un personnage lié au serveur sur lequel
         tu effectues cette commande.
         """
-        author, guild = get_author_guild_from_context(context)
-        _, characters = _get_path_and_characters(author, guild)
+        author, guild, _, characters = _init_data(context)
+
         if not name:
             return await context.send(f'', embed=get_leader(characters).embed)
 
@@ -213,8 +216,8 @@ class Personnage(Cog):
         if type_ == GLOBAL_RANKING:
             guilds = self.bot.guilds
             await global_leaderboard(context, guilds)
-
         ...
+        # TODO: ajouter le leaderboard intraguild
 
 
 def setup(bot):

@@ -27,11 +27,11 @@ def get_leader(characters):
         raise NoCharacters
 
     for name, character in characters.items():
-        if character._current:
+        if character.is_leader:
             return character
 
 
-def _get_path_and_characters(author: Member, guild: Guild):
+def get_path_and_characters(author: Member, guild: Guild):
     file_name = f'{author.id}-{guild.id}.json'
     path = USER_PATH.format(guild.id, file_name)
     characters = _get_character(path)

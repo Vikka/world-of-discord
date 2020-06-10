@@ -5,12 +5,12 @@ from typing import Tuple, Dict
 from discord import Member, Guild, Message, TextChannel
 from discord.utils import get
 
-from errors.character import NoCharacters, NoLeader, CharactersLocked
+from errors.character import NoLeader, CharactersLocked
 from src.classes.Character import Character, get_enemy_life, get_loot
 from src.constants.CHANNELS import CHANNEL_INFO_WOD
 from src.constants.FIGHT import ATTACK_SPEED, ROUND_TIME
 from src.manipulation.character_manipulation import get_leader, \
-    _store_characters, _get_path_and_characters
+    _store_characters, get_path_and_characters
 
 
 def _init_fight_data(message: Message) -> Tuple[Member, Guild, TextChannel]:
@@ -24,7 +24,7 @@ def _init_fight_data(message: Message) -> Tuple[Member, Guild, TextChannel]:
 
 async def init_fight(author: Member, guild: Guild) \
         -> Tuple[Character, str, dict]:
-    path, characters = _get_path_and_characters(author, guild)
+    path, characters = get_path_and_characters(author, guild)
     leader: Character = get_leader(characters)
 
     if not leader:

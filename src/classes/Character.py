@@ -43,7 +43,7 @@ class Character(metaclass=CharacterSingleton):
     _level: int
     _exp: int
     total_exp: int
-    _current: bool
+    is_leader: bool
     _weapon: Optional[Item]
     helmet: Optional[Item]
     legs: Optional[Item]
@@ -51,8 +51,7 @@ class Character(metaclass=CharacterSingleton):
     lock: int
 
     def _create_character(self, id_: str, name: str, power: int, level: int,
-                          exp: int,
-                          current: bool, lock: int,
+                          exp: int, is_leader: bool, lock: int,
                           total_exp: int = 0,
                           weapon: Optional[Item] = None,
                           helmet: Optional[Item] = None,
@@ -81,7 +80,7 @@ class Character(metaclass=CharacterSingleton):
         self._level = level
         self._exp = exp
         self.total_exp = total_exp
-        self._current = current
+        self.is_leader = is_leader
         self._weapon = weapon
         self.helmet = helmet
         self.legs = legs
@@ -159,7 +158,7 @@ class Character(metaclass=CharacterSingleton):
         json = {
             'name': self._name,
             'id': self.id,
-            'current': self._current,
+            'current': self.is_leader,
             'level': self._level,
             'exp': self._exp,
             'total_exp': self.total_exp,
