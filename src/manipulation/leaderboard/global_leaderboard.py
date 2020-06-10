@@ -53,6 +53,4 @@ def _create_embed(guild_list: List[Tuple[str, int]]):
 async def global_leaderboard(context: Context, guilds: List[Guild]):
     if not guilds:
         return
-    guild_list = _guild_xp_sorted(guilds)
-    embed = _create_embed(guild_list)
-    await context.send(embed=embed)
+    await context.send(embed=_create_embed(_guild_xp_sorted(guilds)))
