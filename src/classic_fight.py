@@ -25,9 +25,6 @@ def _init_fight_data(message: Message) -> Tuple[Member, Guild, TextChannel]:
 async def init_fight(author: Member, guild: Guild) \
         -> Tuple[Character, str, dict]:
     path, characters = _get_path_and_characters(author, guild)
-    if not characters:
-        raise NoCharacters
-
     leader: Character = get_leader(characters)
 
     if not leader:

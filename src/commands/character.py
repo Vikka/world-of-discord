@@ -1,4 +1,5 @@
 import re
+from typing import Optional
 
 from discord.ext.commands import Cog, Context, command, BadArgument, \
     MissingRequiredArgument, Bot
@@ -10,7 +11,7 @@ from src.commands.utils import no_direct_message, in_command_channel
 from src.constants.CONSTANTS import RANKING, GLOBAL_RANKING, DEFAULT_RANKING
 from src.constants.REGEX import NAME_PATTERN, NAME_PATTERN_LINK
 from src.manipulation.character_manipulation import _get_path_and_characters, \
-    _store_characters
+    _store_characters, get_leader
 from src.manipulation.context_manipulation import get_author_guild_from_context
 from src.manipulation.leaderboard_manipulation import global_leaderboard
 
@@ -19,6 +20,8 @@ name_pattern = re.compile(NAME_PATTERN, flags=re.I)
 
 def is_name(name: str) -> str:
     """For command annotation"""
+    if not name:
+        return ''
     if not name_pattern.match(name):
         raise BadArgument
     return name
@@ -150,7 +153,8 @@ class Personnage(Cog):
 
         if len(characters) < 1:
             raise NoCharacters
-        char_list = ',\n\t'.join(character._name for character in characters.values())
+        char_list = ',\n\t'.join(
+            character._name for character in characters.values())
         await context.send(f'Voici la liste de tes personnages :\n\t'
                            f'{char_list}.')
 
@@ -164,7 +168,8 @@ class Personnage(Cog):
 
     @command(name='fiche', aliases=['sheet'],
              checks=[no_direct_message, in_command_channel])
-    async def character_sheet(self, context: Context, *, name: is_name):
+    async def character_sheet(self, context: Context, *,
+                              name: Optional[is_name]):
         """
         Fiche du personnage.
 
@@ -173,11 +178,12 @@ class Personnage(Cog):
         """
         author, guild = get_author_guild_from_context(context)
         _, characters = _get_path_and_characters(author, guild)
+        if not name:
+            return await context.send(f'', embed=get_leader(characters).embed)
 
         id_ = f'{guild.id}-{author.id}-{name}'
         if id_ not in characters:
             raise UnknownCharacters
-
         await context.send(f'', embed=characters[id_].embed)
 
     @character_sheet.error
@@ -203,7 +209,7 @@ class Personnage(Cog):
 
     @command(name='classement', aliases=['leaderboard'], hidden=True,
              checks=[no_direct_message, in_command_channel])
-    async def leaderboard(self, context: Context, *, type_:ranking_type):
+    async def leaderboard(self, context: Context, *, type_: ranking_type):
         if type_ == GLOBAL_RANKING:
             guilds = self.bot.guilds
             await global_leaderboard(context, guilds)

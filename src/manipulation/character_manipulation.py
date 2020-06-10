@@ -5,6 +5,7 @@ from typing import Dict, Tuple, TYPE_CHECKING
 
 from discord import Member, Guild
 
+from errors.character import NoCharacters
 from src.constants.PATH import USER_PATH
 
 from src.classes.Character import Character
@@ -23,7 +24,7 @@ def _get_character(path: str) -> Dict[str, Character]:
 
 def get_leader(characters):
     if not characters:
-        return
+        raise NoCharacters
 
     for name, character in characters.items():
         if character._current:
