@@ -3,7 +3,7 @@ import os
 from discord.ext.commands import Cog, Context, command, BadArgument
 from dotenv import load_dotenv
 
-from errors.tutorial import WrongChapter
+from src.errors.tutorial import WrongChapter
 from src.commands.utils import in_command_channel
 
 load_dotenv()

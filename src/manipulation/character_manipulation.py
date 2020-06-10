@@ -1,11 +1,11 @@
 from json import dumps, load
 from os import makedirs
 from os.path import isfile, dirname
-from typing import Dict, Tuple, TYPE_CHECKING
+from typing import Dict
 
 from discord import Member, Guild
 
-from errors.character import NoCharacters
+from src.errors.character import NoCharacters
 from src.constants.PATH import USER_PATH
 
 from src.classes.Character import Character

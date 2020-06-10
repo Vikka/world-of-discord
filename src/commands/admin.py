@@ -2,7 +2,7 @@ from discord import Guild, PermissionOverwrite
 from discord.ext.commands import Cog, command, Context, Bot
 from discord.utils import get
 
-from errors.guild import ChannelAlreadyExist
+from src.errors.guild import ChannelAlreadyExist
 from src.commands.utils import is_admin, is_owner
 
 

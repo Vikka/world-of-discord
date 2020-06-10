@@ -4,7 +4,7 @@ from typing import Optional
 from discord.ext.commands import Cog, Context, command, BadArgument, \
     MissingRequiredArgument, Bot
 
-from errors.character import TwoManyCharacters, UnknownCharacters, \
+from src.errors.character import TwoManyCharacters, UnknownCharacters, \
     NoCharacters, CharacterAlreadyExist
 from src.classes.Character import Character
 from src.commands.utils import no_direct_message, in_command_channel

@@ -5,7 +5,7 @@ from typing import Tuple, Dict
 from discord import Member, Guild, Message, TextChannel
 from discord.utils import get
 
-from errors.character import NoLeader, CharactersLocked
+from src.errors.character import NoLeader, CharactersLocked
 from src.classes.Character import Character, get_enemy_life, get_loot
 from src.constants.CHANNELS import CHANNEL_INFO_WOD
 from src.constants.FIGHT import ATTACK_SPEED, ROUND_TIME

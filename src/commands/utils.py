@@ -4,7 +4,7 @@ from discord import DMChannel, Member, Guild
 from discord.ext.commands import Context
 from dotenv import load_dotenv
 
-from errors.utils import NotInCommandChannel, NotAdmin, NotOwner
+from src.errors.utils import NotInCommandChannel, NotAdmin, NotOwner
 
 load_dotenv()
 ADMIN = int(os.getenv('ADMIN'))
