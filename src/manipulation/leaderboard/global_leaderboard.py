@@ -21,7 +21,7 @@ def _guild_xp_sorted(guilds: List[Guild]) -> List[Tuple[str, int]]:
     guild_list = list()
     for guild in guilds:
         guild_list.append((guild.name, _max_xp(guild)))
-        return sorted(guild_list, key=lambda x: x[1], reverse=True)
+    return sorted(guild_list, key=lambda x: x[1], reverse=True)
 
 
 def _create_embed(guild_list: List[Tuple[str, int]]):
