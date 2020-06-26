@@ -8,8 +8,10 @@ from typing import Literal, Optional
 from discord import Embed
 
 from src.constants.CONSTANTS import STAT_BASE
-from src.constants.ITEMS import RARITY, COMMON, MAGIC, RARE, TYPES, COLOR
-from src.constants.PATH import IMG_LINKS_PATH, ITEM_NAME_PATH
+from src.constants.ITEMS import RARITY, COMMON, MAGIC, RARE, TYPES, COLOR, \
+    WEAPON, WEAPON_TYPES
+from src.constants.PATH import IMG_LINKS_PATH, ITEM_NAME_PATH, \
+    RARE_ITEM_NAME_PATH
 
 setlocale(LC_ALL, '')
 
@@ -72,14 +74,21 @@ def _stats(level, rarity, base):
     return randint(legend_min, legend_max)
 
 
-def _get_name(rarity):
-    with open(ITEM_NAME_PATH, encoding='utf-8') as items_name:
+def _get_name(rarity, item_type):
+    if rarity == RARE:
+        item_name_path = RARE_ITEM_NAME_PATH[item_type]
+    else:
+        item_name_path = ITEM_NAME_PATH[item_type]
+    with open(item_name_path, encoding='utf-8') as items_name:
         names = items_name.read().splitlines()
     return choice(names).capitalize()
 
 
 def _get_type():
-    return choice(TYPES)
+    item_type = choice(TYPES)
+    if item_type == WEAPON:
+        item_type = choice(WEAPON_TYPES)
+    return item_type
 
 
 class Item:
@@ -128,12 +137,12 @@ class Item:
             self._create_item(json['name'], json['type'], json['power'],
                               json['level'], json['quality'])
             return
-        type_ = _get_type()
+        item_type = _get_type()
         rarity = _get_rarity(rarity)
         base = _get_base(level)
         stat = _stats(level, rarity, base)
-        name = _get_name(rarity)
-        self._create_item(name, type_, stat, level, rarity)
+        name = _get_name(rarity, item_type)
+        self._create_item(name, item_type, stat, level, rarity)
 
     def __setattr__(self, name, value):
         """Prevent modification of attributes."""

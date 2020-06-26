@@ -93,8 +93,8 @@ class Character(metaclass=CharacterSingleton):
         """Create a Item instance."""
         if json:
             total_exp = json['total_exp'] if 'total_exp' in json else 0
-            weapon = Item(json=json['weapon']) if 'weapon' in json \
-                                                  and json['weapon'] else None
+            weapon = Item(json=json['weapons']) if 'weapons' in json \
+                                                  and json['weapons'] else None
             helmet = Item(json=json['helmet']) if 'helmet' in json \
                                                   and json['helmet'] else None
             legs = Item(json=json['legs']) if 'legs' in json \
@@ -163,7 +163,7 @@ class Character(metaclass=CharacterSingleton):
             'exp': self._exp,
             'total_exp': self.total_exp,
             'power': self._power,
-            'weapon': self._weapon.to_json() if self._weapon else None,
+            'weapons': self._weapon.to_json() if self._weapon else None,
             'helmet': self.helmet.to_json() if self.helmet else None,
             'legs': self.legs.to_json() if self.legs else None,
             'boots': self.boots.to_json() if self.boots else None,

@@ -11,12 +11,12 @@ from src.classes.Character import Character, clear_character_instances
 from src.classic_fight import start_classic_fight
 
 startup_extensions = ['src.commands.tutorial', 'src.commands.character',
-                      'src.commands.admin']
+                      'src.commands.admin', 'src.commands.informations']
 
 load_dotenv()
 
 if os.getenv('DEBUG') == 'True':
-    startup_extensions.append("debug.commands")
+    startup_extensions.append("src.debug.commands")
 
 COMMAND_PREFIX = os.getenv('COMMAND_PREFIX')
 

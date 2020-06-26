@@ -11,7 +11,7 @@ from src.classes.Item import Item
 from src.constants.PATH import ITEM_NAME_PATH
 
 loot = re.compile(r'!item')
-item_name = re.compile(r'!name_item ([a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂ'
+item_name = re.compile(r'([a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂ'
                        r'ÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._\s-]{5,60})')
 
 ASSETS = 'assets/icon_pack/Weapons'
@@ -29,8 +29,6 @@ async def name_item_help(channel: TextChannel):
 
 class Debug(Cog):
     def __init__(self, bot):
-        with open('data/items_name', encoding='utf_8') as items_name:
-            self.names = items_name.read().splitlines()
         self.bot = bot
 
     @commands.command(hidden=True)
@@ -45,7 +43,7 @@ class Debug(Cog):
         for file_name in only_files:
             file = File(f'{ASSETS}/{file_name}', filename=file_name)
             result = await context.channel.send(file_name, file=file)
-            with open('data/items/weapons_url', 'a') as weapons_url:
+            with open('data/item_links/weapons_url', 'a') as weapons_url:
                 weapons_url.write(f'{result.attachments[0].url}\n')
 
     @commands.command(hidden=True)
@@ -55,34 +53,7 @@ class Debug(Cog):
 
         Exemple d'utilisation : !item
         """
-        channel: TextChannel = context.channel
-        message: Message = context.message
-        match = loot.match(message.content)
-        if not match:
-            return await loot_help(channel)
         await context.send(embed=Item(randint(1, 10)).embed)
-
-    @commands.command(hidden=True)
-    async def name_item(self, context: Context, *command: str):
-        """
-        Channel name_item. Command : !name_item <Nom de l'objet>
-
-        Exemple d'utilisation : !name_item Deuillelombre
-        """
-        channel: TextChannel = context.channel
-
-        message: Message = context.message
-        match = item_name.match(message.content)
-        if not match:
-            return await name_item_help(channel)
-
-        if match.group(1).lower() in self.names:
-            return await context.send(
-                'Le nom existe déjà :) Mais merci de votre participation !')
-
-        with open(ITEM_NAME_PATH, 'a') as items_name:
-            items_name.write(f'{match.group(1).lower()}\n')
-        await context.send('Merci pour votre participation !')
 
 
 def setup(bot):
