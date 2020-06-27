@@ -6,7 +6,7 @@ from typing import Optional
 from discord import Embed, TextChannel
 
 from src.classes.Item import _get_base, Item
-from src.constants.ITEMS import WEAPON, HELMET, LEGS, BOOTS, COMMON
+from src.constants.ITEMS_UTILS import WEAPON, HELMET, LEGS, BOOTS, COMMON
 
 
 @lru_cache(maxsize=None)

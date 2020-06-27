@@ -8,7 +8,7 @@ from typing import Literal, Optional
 from discord import Embed
 
 from src.constants.CONSTANTS import STAT_BASE
-from src.constants.ITEMS import RARITY, COMMON, MAGIC, RARE, TYPES, COLOR, \
+from src.constants.ITEMS_UTILS import RARITY_PROB, COMMON, UNCOMMON, RARE, TYPES, COLOR, \
     WEAPON, WEAPON_TYPES
 from src.constants.PATH import IMG_LINKS_PATH, ITEM_NAME_PATH, \
     RARE_ITEM_NAME_PATH
@@ -21,9 +21,9 @@ with open(IMG_LINKS_PATH, encoding='utf-8') as img_links_folder:
 
 def _get_rarity(rarity):
     if rarity:
-        return RARITY[rarity][0]
-    final_rarity = choices([name[0] for name in RARITY],
-                           cum_weights=[name[1] for name in RARITY])[0]
+        return RARITY_PROB[rarity][0]
+    final_rarity = choices([name[0] for name in RARITY_PROB],
+                           cum_weights=[name[1] for name in RARITY_PROB])[0]
     return final_rarity
 
 
@@ -65,7 +65,7 @@ def _stats(level, rarity, base):
     if rarity == COMMON:
         return randint(common_min, common_max)
     magic_min, magic_max = _magic_stat(common_max, base)
-    if rarity == MAGIC:
+    if rarity == UNCOMMON:
         return randint(magic_min, magic_max)
     rare_min, rare_max = _rare_stat(magic_max, base)
     if rarity == RARE:
