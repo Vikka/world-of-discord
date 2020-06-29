@@ -4,17 +4,16 @@ from typing import Optional
 from discord.ext.commands import Cog, Context, command, BadArgument, \
     MissingRequiredArgument, Bot
 
-from src.errors.character import TwoManyCharacters, UnknownCharacters, \
-    NoCharacters, CharacterAlreadyExist
 from src.classes.Character import Character
 from src.commands.utils import no_direct_message, in_command_channel
 from src.constants.CONSTANTS import RANKING, GLOBAL_RANKING, DEFAULT_RANKING
 from src.constants.REGEX import NAME_PATTERN, NAME_PATTERN_LINK
+from src.errors.character import TwoManyCharacters, UnknownCharacters, \
+    NoCharacters, CharacterAlreadyExist
 from src.manipulation.character_manipulation import get_path_and_characters, \
     _store_characters, get_leader
 from src.manipulation.context_manipulation import get_author_guild_from_context
-from src.manipulation.leaderboard.global_leaderboard import global_leaderboard, \
-    _max_xp
+from src.manipulation.leaderboard.global_leaderboard import global_leaderboard
 from src.manipulation.leaderboard.local_leaderboard import local_leaderboard
 
 name_pattern = re.compile(NAME_PATTERN, flags=re.I)
@@ -217,7 +216,7 @@ class Personnage(Cog):
     async def leaderboard(self, context: Context, *, type_: Optional[ranking_type] = None):
         if type_ == GLOBAL_RANKING:
             guilds = self.bot.guilds
-            await global_leaderboard(context, guilds)
+            await global_leaderboard(context, guilds, context.author)
         else:
             await local_leaderboard(context, context.guild, context.author)
         # TODO: ajouter le leaderboard intraguild

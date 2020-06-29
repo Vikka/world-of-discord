@@ -36,3 +36,5 @@ def is_owner(context: Context) -> bool:
     if author != guild.owner:
         raise NotOwner
     return True
+
+
