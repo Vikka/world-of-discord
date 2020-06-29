@@ -219,7 +219,7 @@ class Personnage(Cog):
             guilds = self.bot.guilds
             await global_leaderboard(context, guilds)
         else:
-            await local_leaderboard(context, context.guild)
+            await local_leaderboard(context, context.guild, context.author)
         # TODO: ajouter le leaderboard intraguild
 
 

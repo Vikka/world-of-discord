@@ -20,7 +20,7 @@ ITEMS = [
     {},
     {
         UNCOMMON: {
-            DAGGER: Item("Poignard de l'armée Gnome", 'dagger_icon_2'),
+            DAGGER: Item("Épée longue de l'armée Gnome", 'dagger_icon_2'),
         },
     },
     {
@@ -36,7 +36,7 @@ ITEMS = [
     {},
     {
         UNCOMMON: {
-            DAGGER: Item('Croc de la veuve', 'dagger_icon_2'),
+            DAGGER: Item('Croc de veuve', 'dagger_icon_2'),
         },
     },
     {

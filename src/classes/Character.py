@@ -6,7 +6,8 @@ from typing import Optional
 from discord import Embed, TextChannel
 
 from src.classes.Item import _get_base, Item
-from src.constants.ITEMS_UTILS import WEAPON, HELMET, LEGS, BOOTS, COMMON
+from src.constants.ITEMS_UTILS import HELMET, LEGS, BOOTS, COMMON, \
+    WEAPON_TYPES
 
 
 @lru_cache(maxsize=None)
@@ -133,8 +134,8 @@ class Character(metaclass=CharacterSingleton):
             name='Expérience totale',
             value=f'{self.total_exp:n}'
         )
-        embed.add_field(name='Puissance',
-                        value=f'{self._power:n}(+{self.power - self._power:n})')
+        embed.add_field(name='Puissance (niveaux + objets)',
+                        value=f'{self.power:n} ({self._power:n} + {self.power - self._power:n})')
         return embed
 
     @property
@@ -172,16 +173,17 @@ class Character(metaclass=CharacterSingleton):
         return json
 
     def gain_xp(self, xp) -> bool:
+        level_up = False
         total_xp = get_enemy_life(self._level) * 20
         if self._level > 1:
             total_xp *= 5
         self.total_exp = self.total_exp + xp
-        if self._exp + xp > total_xp:
-            self.level_up()
-            self._exp = self._exp + xp - total_xp
-            return True
         self._exp += xp
-        return False
+        while self._exp + xp > total_xp:
+            self.level_up()
+            self._exp -= total_xp
+            level_up = True
+        return level_up
 
 
 def equip_weapon(fighter, new_item):
@@ -213,7 +215,7 @@ def equip_boots(fighter, new_item):
 
 
 def weapon_changer(new_item):
-    if new_item.type == WEAPON:
+    if new_item.type in WEAPON_TYPES:
         return equip_weapon
     if new_item.type == HELMET:
         return equip_helmet

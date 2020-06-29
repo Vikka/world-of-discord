@@ -2,7 +2,7 @@
 import os
 from asyncio import sleep
 
-from discord import Message, DMChannel, Game, Status
+from discord import Message, DMChannel, Game
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
 

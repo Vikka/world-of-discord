@@ -1,9 +1,35 @@
 maces
-    c   m    r  name
+    c   i   r   name
     1           Gourdin lourd
         4       Fracasse-Crâne
     6           Marteau
         6       Masse de croisé
     10          Gourdin clouté
+            12  Volonté Inflexible
+        13      Trique de Clerc
     16          Marteau de guerre
-
+            20  Marteau de Grâce béni
+daggers
+    c   i   r   name
+    1           Couteau à dépecer
+        2       Épée longue de l'armée Gnome
+    4           Stylet
+        6       Croc de veuve
+            7   Bistouri de Calen
+    8           Couteau à écorcher
+        11      Poignard luisant
+    13          Dague trempée
+            14  Saignegueule de Geaina
+    18          Rasoir aiguisé
+        19      Crochet de brute
+swords
+    c   i   r   name
+        1       Lame de garde
+    3           Épée rouillée
+            3   Lardoir
+        7       Tranchegoule
+    9           Épée courte
+    11          Rapière
+            11  Fourchette à Gnome
+        16      Lame noire
+    18          Glaive

@@ -42,24 +42,23 @@ async def fight(fighter: Character, channel: TextChannel, author: Member,
     print('fight')
     fighter.lock = int(time()) + ROUND_TIME
     _store_characters(path, characters)
-    life = get_enemy_life(fighter._level)
-    current = life
+    current = get_enemy_life(fighter._level)
     next_hit = 0
     print(f'{strftime("%D")}{author.display_name} hit')
     print(f'{time() < fighter.lock}, {time()}, {int(fighter.lock)}')
     while time() < fighter.lock:
         if next_hit >= time():
-            await sleep(ATTACK_SPEED/12)
+            await sleep(ATTACK_SPEED/6)
             continue
         print(
             f'{strftime("%X")} {author.display_name} hit for {fighter.power} damages, {current - fighter.power} remaining.')
         if (last := current - fighter.power) > 0:
             current = last
         else:
-            current = life
+            current = get_enemy_life(fighter._level)
             await get_loot(fighter, channel)
             _store_characters(path, characters)
-            if fighter.gain_xp(life) and channel:
+            if fighter.gain_xp(current) and channel:
                 await channel.send(
                     f"{fighter._name} vient d'atteindre le niveau "
                     f"{fighter._level} !",
