@@ -21,7 +21,7 @@ def create_embed(members: List[Tuple[str, int]], author: Member, type_: int):
     for i, member in enumerate(members[:20], start=1):
         numbers.append(str(i))
         names.append(member[0])
-        exp_max.append(f'{member[1]:n}')
+        exp_max.append(f'{member[1]:,}')
     for i, member in enumerate(members, start=1):
         if member[0] == author.name:
             author_pos = i
@@ -38,5 +38,5 @@ def create_embed(members: List[Tuple[str, int]], author: Member, type_: int):
     embed.add_field(name='Exp max', value=exp_max)
     if has_char:
         embed.add_field(name='Position', value=f'{author_pos}')
-        embed.add_field(name='xp maximum', value=f'{author_xp: n}')
+        embed.add_field(name='xp maximum', value=f'{author_xp:,}')
     return embed

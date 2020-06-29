@@ -135,7 +135,7 @@ class Character(metaclass=CharacterSingleton):
             value=f'{self.total_exp:n}'
         )
         embed.add_field(name='Puissance (niveaux + objets)',
-                        value=f'{self.power:n} ({self._power:n} + {self.power - self._power:n})')
+                        value=f'{self.power:,} ({self._power:,} + {self.power - self._power:,})')
         return embed
 
     @property
