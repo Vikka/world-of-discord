@@ -10,7 +10,7 @@ from src.classes.Character import Character, get_enemy_life, get_loot
 from src.constants.CHANNELS import CHANNEL_INFO_WOD
 from src.constants.FIGHT import ATTACK_SPEED, ROUND_TIME
 from src.manipulation.character_manipulation import get_leader, \
-    _store_characters, get_path_and_characters
+    store_characters, get_path_and_characters
 
 
 def _init_fight_data(message: Message) -> Tuple[Member, Guild, TextChannel]:
@@ -32,7 +32,7 @@ async def init_fight(author: Member, guild: Guild) \
 
     if leader.lock > time():
         leader.lock = int(time()) + ROUND_TIME
-        _store_characters(path, characters)
+        store_characters(path, characters)
         raise CharactersLocked
     return leader, path, characters
 
@@ -40,8 +40,8 @@ async def init_fight(author: Member, guild: Guild) \
 async def fight(fighter: Character, channel: TextChannel, author: Member,
                 path: str, characters: Dict[str, Character]):
     print('fight')
-    fighter.lock = int(time()) + ROUND_TIME
-    _store_characters(path, characters)
+    fighter.update_lock()
+    store_characters(path, characters)
     current = get_enemy_life(fighter._level)
     next_hit = 0
     print(f'{strftime("%D")}{author.display_name} hit')
@@ -57,7 +57,7 @@ async def fight(fighter: Character, channel: TextChannel, author: Member,
         else:
             current = get_enemy_life(fighter._level)
             await get_loot(fighter, channel)
-            _store_characters(path, characters)
+            store_characters(path, characters)
             if fighter.gain_xp(current) and channel:
                 await channel.send(
                     f"{fighter._name} vient d'atteindre le niveau "

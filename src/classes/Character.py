@@ -1,13 +1,16 @@
 import weakref
 from functools import lru_cache
 from pprint import pprint
+from time import time
 from typing import Optional
 
 from discord import Embed, TextChannel
 
 from src.classes.Item import _get_base, Item
+from src.constants.FIGHT import ROUND_TIME
 from src.constants.ITEMS_UTILS import HELMET, LEGS, BOOTS, COMMON, \
     WEAPON_TYPES
+from src.utils import clear_instances
 
 
 @lru_cache(maxsize=None)
@@ -16,16 +19,11 @@ def get_enemy_life(level):
     return int(pow(base, 2) * 0.900900900 + level * base * 1.2012012)
 
 
-def clear_character_instances(cls):
-    cls._instances = \
-        {key: ref for key, ref in cls._instances.items() if ref()}
-
-
 class CharacterSingleton(type):
     _instances = {}
 
     def __call__(cls, id_, *args, **kwargs):
-        clear_character_instances(Character)
+        clear_instances(Character)
         if id_ not in cls._instances:
             instance = super(CharacterSingleton, cls).__call__(id_, *args,
                                                                **kwargs)
@@ -86,7 +84,7 @@ class Character(metaclass=CharacterSingleton):
         self.helmet = helmet
         self.legs = legs
         self.boots = boots
-        self.lock = lock
+        self._lock = lock
 
     def __init__(self, id_: str = '', name: str = '', level: int = 1,
                  exp: int = 0,
@@ -119,6 +117,9 @@ class Character(metaclass=CharacterSingleton):
             self._level,
             self._power,
         )
+
+    def update_lock(self):
+        self._lock = int(time()) + ROUND_TIME
 
     @property
     def embed(self):
@@ -172,17 +173,28 @@ class Character(metaclass=CharacterSingleton):
         }
         return json
 
+    @staticmethod
+    def get_level_xp(level: int) -> int:
+        """
+        @param level: The character's level.
+        @return: The amount of xp required to progress to the next level.
+        """
+        level_xp = get_enemy_life(level) * 20
+        if level > 1:
+            level_xp *= 5
+        return level_xp
+
+
     def gain_xp(self, xp) -> bool:
         level_up = False
-        total_xp = get_enemy_life(self._level) * 20
-        if self._level > 1:
-            total_xp *= 5
-        self.total_exp = self.total_exp + xp
+        level_xp = self.get_level_xp(self._level)
+        self.total_exp += xp
         self._exp += xp
-        while self._exp + xp > total_xp:
+        while self._exp + xp > level_xp:
             self.level_up()
-            self._exp -= total_xp
+            self._exp -= level_xp
             level_up = True
+            level_xp = self.get_level_xp(self._level)
         return level_up
 
 

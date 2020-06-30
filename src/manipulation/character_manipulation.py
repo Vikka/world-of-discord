@@ -38,7 +38,7 @@ def get_path_and_characters(author: Member, guild: Guild):
     return path, characters
 
 
-def _store_characters(path: str, characters_list: Dict[str, Character]):
+def store_characters(path: str, characters_list: Dict[str, Character]):
     makedirs(dirname(path), exist_ok=True)
     if isfile(path):
         with open(path, 'w') as new_file:

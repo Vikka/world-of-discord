@@ -11,7 +11,7 @@ from src.constants.REGEX import NAME_PATTERN, NAME_PATTERN_LINK
 from src.errors.character import TwoManyCharacters, UnknownCharacters, \
     NoCharacters, CharacterAlreadyExist
 from src.manipulation.character_manipulation import get_path_and_characters, \
-    _store_characters, get_leader
+    store_characters, get_leader
 from src.manipulation.context_manipulation import get_author_guild_from_context
 from src.manipulation.leaderboard.global_leaderboard import global_leaderboard
 from src.manipulation.leaderboard.local_leaderboard import local_leaderboard
@@ -72,7 +72,7 @@ class Personnage(Cog):
 
         id_ = f'{guild.id}-{author.id}-{name}'
         characters[id_] = Character(id_, name)
-        _store_characters(path, characters)
+        store_characters(path, characters)
         await context.send(f'{name} créé·e avec succès !')
 
     @create.error
@@ -122,7 +122,7 @@ class Personnage(Cog):
         if not leader_flag and characters:
             list(characters.values())[0].is_leader = True
 
-        _store_characters(path, characters)
+        store_characters(path, characters)
         await context.send(f'{name} supprimé·e avec succès !')
 
     @delete.error
