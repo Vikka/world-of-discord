@@ -8,10 +8,9 @@ from discord import Embed, TextChannel
 
 from src.classes.Item import _get_base, Item
 from src.constants.FIGHT import ROUND_TIME
-from src.constants.ITEMS_UTILS import HELMET, LEGS, BOOTS, COMMON, \
-    WEAPON_TYPES
+from src.constants.ITEMS_UTILS import COMMON, WEAPON_TYPES
 from src.constants.JSON_KEY import TOTAL_EXP, WEAPONS, ID, NAME, POWER, LEVEL, \
-    LOCK, EXP, CURRENT
+    LOCK, EXP, CURRENT, HELMET, LEGS, BOOTS
 from src.utils import clear_instances
 
 

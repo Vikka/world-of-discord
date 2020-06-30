@@ -31,7 +31,7 @@ async def init_fight(author: Member, guild: Guild) \
         raise NoLeader
 
     if leader.lock > time():
-        leader.lock = int(time()) + ROUND_TIME
+        leader.update_lock()
         store_characters(path, characters)
         raise CharactersLocked
     return leader, path, characters
