@@ -5,10 +5,9 @@ from typing import Dict
 
 from discord import Member, Guild
 
-from src.errors.character import NoCharacters
-from src.constants.PATH import USER_PATH
-
 from src.classes.Character import Character
+from src.constants.PATH import USER_PATH
+from src.errors.character import NoCharacters
 
 
 def _get_character(path: str) -> Dict[str, Character]:
@@ -18,7 +17,7 @@ def _get_character(path: str) -> Dict[str, Character]:
             content = load(new_file)
     if not content:
         return {}
-    return {id_: Character(id_, json=character) for id_, character in
+    return {id_: Character.from_json(character) for id_, character in
             content.items()}
 
 

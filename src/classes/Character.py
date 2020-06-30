@@ -10,6 +10,8 @@ from src.classes.Item import _get_base, Item
 from src.constants.FIGHT import ROUND_TIME
 from src.constants.ITEMS_UTILS import HELMET, LEGS, BOOTS, COMMON, \
     WEAPON_TYPES
+from src.constants.JSON_KEY import TOTAL_EXP, WEAPONS, ID, NAME, POWER, LEVEL, \
+    LOCK, EXP, CURRENT
 from src.utils import clear_instances
 
 
@@ -49,30 +51,30 @@ class Character(metaclass=CharacterSingleton):
     boots: Optional[Item]
     lock: int
 
-    def _create_character(self, id_: str, name: str, power: int, level: int,
-                          exp: int, is_leader: bool, lock: int,
-                          total_exp: int = 0,
-                          weapon: Optional[Item] = None,
-                          helmet: Optional[Item] = None,
-                          legs: Optional[Item] = None,
-                          boots: Optional[Item] = None,
-                          ):
-        """Create a Character instance."""
-        if not isinstance(name, str):
-            raise ValueError("'name' must be a string")
-        if not isinstance(id_, str):
-            raise ValueError("'id' must be a string")
-        if not isinstance(power, int):
-            raise ValueError("'power' must be a int")
-        if not isinstance(level, int):
-            raise ValueError("'level' must be a int")
-        if not isinstance(exp, int):
-            raise ValueError("'exp' must be a int")
-        if not isinstance(total_exp, int):
-            raise ValueError("'total_exp' must be a int")
-        if not isinstance(lock, int):
-            raise ValueError("'lock' must be a int")
+    @classmethod
+    def from_json(cls, json: dict):
+        total_exp = json[TOTAL_EXP] if TOTAL_EXP in json else 0
+        weapon = Item(json=json[WEAPONS]) \
+            if WEAPONS in json and json[WEAPONS] else None
+        helmet = Item(json=json[HELMET]) \
+            if HELMET in json and json[HELMET] else None
+        legs = Item(json=json[LEGS]) \
+            if LEGS in json and json[LEGS] else None
+        boots = Item(json=json[BOOTS]) \
+            if BOOTS in json and json[BOOTS] else None
+        lock = json[LOCK] if LOCK in json else 0
+        cls(json[ID], json[NAME], json[POWER],
+            json[LEVEL], json[EXP], json[CURRENT], lock,
+            total_exp, weapon, helmet, legs, boots)
 
+    def __init__(self, id_: str, name: str, power: Optional[int] = None,
+                 level: int = 0, exp: int = 0, is_leader: bool = True,
+                 lock: int = 0, total_exp: int = 0,
+                 weapon: Optional[Item] = None,
+                 helmet: Optional[Item] = None,
+                 legs: Optional[Item] = None,
+                 boots: Optional[Item] = None, ):
+        """Create a Item instance."""
         self.id = id_
         self._name = name
         self._power = power
@@ -85,29 +87,6 @@ class Character(metaclass=CharacterSingleton):
         self.legs = legs
         self.boots = boots
         self._lock = lock
-
-    def __init__(self, id_: str = '', name: str = '', level: int = 1,
-                 exp: int = 0,
-                 json: Optional[dict] = None):
-        """Create a Item instance."""
-        if json:
-            total_exp = json['total_exp'] if 'total_exp' in json else 0
-            weapon = Item(json=json['weapons']) if 'weapons' in json \
-                                                  and json['weapons'] else None
-            helmet = Item(json=json['helmet']) if 'helmet' in json \
-                                                  and json['helmet'] else None
-            legs = Item(json=json['legs']) if 'legs' in json \
-                                              and json['legs'] else None
-            boots = Item(json=json['boots']) if 'boots' in json \
-                                                and json['boots'] else None
-            lock = json['lock'] if 'lock' in json else 0
-            self._create_character(json['id'], json['name'], json['power'],
-                                   json['level'],
-                                   json['exp'], json['current'], lock,
-                                   total_exp, weapon, helmet, legs, boots)
-            return
-        power = _get_base(level)
-        self._create_character(id_, name, power, level, exp, True, 0)
 
     def __repr__(self):
         """Create a string representation of the Character."""
@@ -183,7 +162,6 @@ class Character(metaclass=CharacterSingleton):
         if level > 1:
             level_xp *= 5
         return level_xp
-
 
     def gain_xp(self, xp) -> bool:
         level_up = False
