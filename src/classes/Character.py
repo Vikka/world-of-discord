@@ -112,14 +112,15 @@ class Character(metaclass=CharacterSingleton):
         embed.add_field(name='Niveau', value=str(self._level))
         embed.add_field(
             name='Expérience',
-            value=f'{self._exp:n}/{level_total_exp:n}'
+            value=f'{self._exp:,}/{level_total_exp:,}'
         )
         embed.add_field(
             name='Expérience totale',
-            value=f'{self.total_exp:n}'
+            value=f'{self.total_exp:,}'
         )
         embed.add_field(name='Puissance (niveaux + objets)',
-                        value=f'{self.power:,} ({self._power:,} + {self.power - self._power:,})')
+                        value=f'{self.power:,} ({self._power:,} '
+                              f'+ {self.power - self._power:,})')
         return embed
 
     @property
