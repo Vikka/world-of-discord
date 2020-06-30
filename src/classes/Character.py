@@ -62,10 +62,10 @@ class Character(metaclass=CharacterSingleton):
             if LEGS in json and json[LEGS] else None
         boots = Item(json=json[BOOTS]) \
             if BOOTS in json and json[BOOTS] else None
-        lock = json[LOCK] if LOCK in json else 0
-        cls(json[ID], json[NAME], json[POWER],
-            json[LEVEL], json[EXP], json[CURRENT], lock,
-            total_exp, weapon, helmet, legs, boots)
+        lock = json[LOCK] if LOCK in json else None
+        return cls(json[ID], json[NAME], json[POWER],
+                   json[LEVEL], json[EXP], json[CURRENT], lock,
+                   total_exp, weapon, helmet, legs, boots)
 
     def __init__(self, id_: str, name: str, power: Optional[int] = None,
                  level: int = 0, exp: int = 0, is_leader: bool = True,
@@ -99,6 +99,10 @@ class Character(metaclass=CharacterSingleton):
 
     def update_lock(self):
         self._lock = int(time()) + ROUND_TIME
+
+    @property
+    def lock(self):
+        return self._lock
 
     @property
     def embed(self):
