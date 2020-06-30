@@ -29,7 +29,7 @@ def _get_rarity(rarity):
 
 @lru_cache(maxsize=None)
 def _get_base(level: int, stat: int = STAT_BASE + 1):
-    return _get_base(level - 1) + _get_base(level - 1) // 10 if level - 1 else stat
+    return _get_base(level - 1) + _get_base(level - 1) // 10 if level > 0 else stat
 
 
 @lru_cache(maxsize=None)

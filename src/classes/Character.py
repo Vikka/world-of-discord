@@ -10,8 +10,10 @@ from src.classes.Item import _get_base, Item
 from src.constants.FIGHT import ROUND_TIME
 from src.constants.ITEMS_UTILS import COMMON, WEAPON_TYPES
 from src.constants.JSON_KEY import TOTAL_EXP, WEAPONS, ID, NAME, POWER, LEVEL, \
-    LOCK, EXP, CURRENT, HELMET, LEGS, BOOTS
+    LOCK, EXP, CURRENT
 from src.utils import clear_instances
+from src.constants import JSON_KEY
+from src.constants import ITEMS_UTILS
 
 
 @lru_cache(maxsize=None)
@@ -55,19 +57,19 @@ class Character(metaclass=CharacterSingleton):
         total_exp = json[TOTAL_EXP] if TOTAL_EXP in json else 0
         weapon = Item(json=json[WEAPONS]) \
             if WEAPONS in json and json[WEAPONS] else None
-        helmet = Item(json=json[HELMET]) \
-            if HELMET in json and json[HELMET] else None
-        legs = Item(json=json[LEGS]) \
-            if LEGS in json and json[LEGS] else None
-        boots = Item(json=json[BOOTS]) \
-            if BOOTS in json and json[BOOTS] else None
+        helmet = Item(json=json[JSON_KEY.HELMET]) \
+            if JSON_KEY.HELMET in json and json[JSON_KEY.HELMET] else None
+        legs = Item(json=json[JSON_KEY.LEGS]) \
+            if JSON_KEY.LEGS in json and json[JSON_KEY.LEGS] else None
+        boots = Item(json=json[JSON_KEY.BOOTS]) \
+            if JSON_KEY.BOOTS in json and json[JSON_KEY.BOOTS] else None
         lock = json[LOCK] if LOCK in json else None
         return cls(json[ID], json[NAME], json[POWER],
                    json[LEVEL], json[EXP], json[CURRENT], lock,
                    total_exp, weapon, helmet, legs, boots)
 
     def __init__(self, id_: str, name: str, power: Optional[int] = None,
-                 level: int = 0, exp: int = 0, is_leader: bool = True,
+                 level: int = 1, exp: int = 0, is_leader: bool = True,
                  lock: int = 0, total_exp: int = 0,
                  weapon: Optional[Item] = None,
                  helmet: Optional[Item] = None,
@@ -76,7 +78,7 @@ class Character(metaclass=CharacterSingleton):
         """Create a Item instance."""
         self.id = id_
         self._name = name
-        self._power = power
+        self._power = _get_base(level) if power is None else power
         self._level = level
         self._exp = exp
         self.total_exp = total_exp
@@ -211,11 +213,11 @@ def equip_boots(fighter, new_item):
 def weapon_changer(new_item):
     if new_item.type in WEAPON_TYPES:
         return equip_weapon
-    if new_item.type == HELMET:
+    if new_item.type == ITEMS_UTILS.HELMET:
         return equip_helmet
-    if new_item.type == LEGS:
+    if new_item.type == ITEMS_UTILS.LEGS:
         return equip_legs
-    if new_item.type == BOOTS:
+    if new_item.type == ITEMS_UTILS.BOOTS:
         return equip_boots
     raise ValueError('Item type unknown')
 
