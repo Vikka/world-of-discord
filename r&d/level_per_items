@@ -33,3 +33,12 @@ swords
             11  Fourchette à Gnome
         16      Lame noire
     18          Glaive
+bows
+    c   i   r   name
+    2           Arc court
+        3       Trait gobelin
+    5           Arc long
+        10      Arc des Sylves
+    13          Arc composite
+        17      Perce-cuir
+    18          Arc courbe
