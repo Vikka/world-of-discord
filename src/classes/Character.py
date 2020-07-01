@@ -174,7 +174,7 @@ class Character(metaclass=CharacterSingleton):
         level_xp = self.get_level_xp(self._level)
         self.total_exp += xp
         self._exp += xp
-        while self._exp + xp > level_xp:
+        while self._exp > level_xp:
             self.level_up()
             self._exp -= level_xp
             level_up = True
