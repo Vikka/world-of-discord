@@ -48,8 +48,8 @@ WEAPON_TYPES = [BOW, DAGGER, MACE, SWORD]
 
 RARITY_PROB = (
     (RANDOM, 0),
-    (COMMON, 0),
-    (UNCOMMON, 0.5),
+    (COMMON, 0.98),
+    (UNCOMMON, 0.999),
     (RARE, 1),
 )
 
