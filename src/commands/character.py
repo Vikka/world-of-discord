@@ -49,15 +49,16 @@ class Personnage(Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @staticmethod
     @command(name='creer', usage='<Prénom> | <Prénom Nom>',
              aliases=['créer', 'create'],
              checks=[no_direct_message, in_command_channel])
-    async def create(self, context: Context, *, name: is_name):
+    async def create(context: Context, *, name: is_name):
         """
         Enregistre un nouveau personnage.
 
         Te permet de créer un personnage lié au serveur sur lequel tu
-        effectues cette commande. Tu peux créer jusqu'à 0 personnages.
+        effectues cette commande. Tu peux créer jusqu'à 1 personnages.
         """
         author, guild, path, characters = _init_data(context)
 
