@@ -1,5 +1,5 @@
 from collections import defaultdict
-from functools import lru_cache
+from functools import lru_cache, partial, reduce
 from locale import setlocale, LC_ALL
 from pprint import pprint
 from random import choices, randint, choice
@@ -8,10 +8,12 @@ from typing import Literal, Optional
 from discord import Embed
 
 from src.constants.CONSTANTS import STAT_BASE
-from src.constants.ITEMS_UTILS import RARITY_PROB, COMMON, UNCOMMON, RARE, TYPES, COLOR, \
+from src.constants.ITEMS_UTILS import RARITY_PROB, COMMON, UNCOMMON, RARE, \
+    TYPES, COLOR, \
     WEAPON, WEAPON_TYPES
 from src.constants.PATH import IMG_LINKS_PATH, ITEM_NAME_PATH, \
     RARE_ITEM_NAME_PATH
+from src.utils import first
 
 setlocale(LC_ALL, '')
 
@@ -29,7 +31,8 @@ def _get_rarity(rarity):
 
 @lru_cache(maxsize=None)
 def _get_base(level: int, stat: int = STAT_BASE + 1):
-    return _get_base(level - 1) + _get_base(level - 1) // 10 if level > 1 else stat
+    return _get_base(level - 1) + _get_base(
+        level - 1) // 10 if level > 1 else stat
 
 
 @lru_cache(maxsize=None)
@@ -84,8 +87,24 @@ def _get_name(rarity, item_type):
     return choice(names).capitalize()
 
 
-def _get_type():
-    item_type = choice(TYPES)
+def item_types_per_level(key: int, level: int):
+    return level >= key
+
+
+def list_extend(li_1, li_2):
+    return li_1 + li_2
+
+
+def _get_type(level: int) -> str:
+    switch = {
+        21: 3,
+        11: 2,
+        0: 1,
+    }
+    predicate = partial(item_types_per_level, level=level)
+
+    item_type = choice(reduce(list_extend,
+                              TYPES[:switch[first(switch, predicate)]]))
     if item_type == WEAPON:
         item_type = choice(WEAPON_TYPES)
     return item_type
@@ -137,7 +156,7 @@ class Item:
             self._create_item(json['name'], json['type'], json['power'],
                               json['level'], json['quality'])
             return
-        item_type = _get_type()
+        item_type = _get_type(level)
         rarity = _get_rarity(rarity)
         base = _get_base(level)
         stat = _stats(level, rarity, base)
