@@ -60,7 +60,7 @@ async def fight(fighter: Character, channel: TextChannel, author: Member,
             current = get_enemy_life(fighter._level)
             await get_loot(fighter, channel)
             store_characters(path, characters)
-            if fighter.gain_xp(current*15) and channel:
+            if fighter.gain_xp(current) and channel:
                 await channel.send(
                     f"{fighter._name} vient d'atteindre le niveau "
                     f"{fighter._level} !",
