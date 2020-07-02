@@ -324,7 +324,7 @@ def weapon_changer(new_item):
     raise ValueError('Item type unknown')
 
 
-async def get_loot(fighter: Character, channel: TextChannel):
+def get_loot(fighter: Character, channel: TextChannel):
     print('get_loot')
     new_item = Item(fighter._level)
     equip_item = weapon_changer(new_item)
@@ -332,9 +332,7 @@ async def get_loot(fighter: Character, channel: TextChannel):
     if not equip_item(fighter, new_item) or new_item.quality == COMMON \
             or not channel:
         return
-
-    await channel.send(f'{fighter._name} vient de récupérer cet objet :',
-                       embed=new_item.embed)
+    return f'{fighter._name} vient de récupérer cet objet :', new_item.embed
 
 
 if __name__ == '__main__':

@@ -58,13 +58,18 @@ async def fight(fighter: Character, channel: TextChannel, author: Member,
             current = last
         else:
             current = get_enemy_life(fighter._level)
-            await get_loot(fighter, channel)
-            store_characters(path, characters)
-            if fighter.gain_xp(current) and channel:
+            loot = get_loot(fighter, channel)
+            level_up = fighter.gain_xp(current)
+            if not channel:
+                continue
+            if loot:
+                await channel.send(loot[0], embed=loot[1])
+            if level_up:
                 await channel.send(
                     f"{fighter._name} vient d'atteindre le niveau "
                     f"{fighter._level} !",
                     embed=fighter.embed)
+            store_characters(path, characters)
         next_hit = time() + ATTACK_SPEED
 
 
