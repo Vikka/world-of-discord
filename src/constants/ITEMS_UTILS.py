@@ -39,9 +39,12 @@ COLOR = {
 
 TYPES = [
     [WEAPON, HELMET, LEGS, BOOTS],
-    [CHEST, GLOVES],
-    [BELT, CLOAK],
-    [SHOULDERS, WRIST],
+    [CHEST],
+    [GLOVES],
+    [BELT],
+    [CLOAK],
+    [SHOULDERS],
+    [WRIST],
     [RING],
 ]
 WEAPON_TYPES = [BOW, DAGGER, MACE, SWORD]

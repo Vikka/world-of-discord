@@ -97,6 +97,9 @@ def list_extend(li_1, li_2):
 
 def _get_type(level: int) -> str:
     switch = {
+        51: 7,
+        41: 6,
+        31: 4,
         21: 3,
         11: 2,
         0: 1,
