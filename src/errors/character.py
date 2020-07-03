@@ -49,3 +49,7 @@ class CharactersLocked(Exception):
 class CharacterAlreadyExist(UserInputError):
     """This inherits from :exc:`UserInputError`."""
     pass
+
+
+class NoRecordedPlayers(Exception):
+    pass

@@ -2,14 +2,14 @@ import re
 from typing import Optional
 
 from discord.ext.commands import Cog, Context, command, BadArgument, \
-    MissingRequiredArgument, Bot
+    MissingRequiredArgument, Bot, CommandInvokeError
 
 from src.classes.Character import Character
 from src.commands.utils import no_direct_message, in_command_channel
 from src.constants.CONSTANTS import RANKING, GLOBAL_RANKING, DEFAULT_RANKING
 from src.constants.REGEX import NAME_PATTERN, NAME_PATTERN_LINK
 from src.errors.character import TwoManyCharacters, UnknownCharacters, \
-    NoCharacters, CharacterAlreadyExist
+    NoCharacters, CharacterAlreadyExist, NoRecordedPlayers
 from src.manipulation.character_manipulation import get_path_and_characters, \
     store_characters, get_leader
 from src.manipulation.context_manipulation import get_author_guild_from_context
@@ -219,7 +219,13 @@ class Personnage(Cog):
             await global_leaderboard(context, guilds, context.author)
         else:
             await local_leaderboard(context, context.guild, context.author)
-        # TODO: ajouter le leaderboard intraguild
+
+    @leaderboard.error
+    async def leaderboard_error(self, context: Context, error):
+        print(error)
+        if isinstance(error, CommandInvokeError):
+            await context.send("Aucun joueurs n'a encore joué, le classement "
+                               "n'est donc pas disponible.")
 
 
 def setup(bot):
