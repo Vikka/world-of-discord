@@ -1,5 +1,6 @@
 import weakref
 from functools import lru_cache
+from math import floor
 from pprint import pprint
 from time import time
 from typing import Optional
@@ -11,15 +12,26 @@ from src.constants.FIGHT import ROUND_TIME
 from src.constants.ITEMS_UTILS import COMMON, WEAPON_TYPES
 from src.constants.JSON_KEY import TOTAL_EXP, WEAPONS, ID, NAME, POWER, LEVEL, \
     LOCK, EXP, CURRENT
-from src.utils import clear_instances
+from src.utils import clear_instances, first
 from src.constants import JSON_KEY
 from src.constants import ITEMS_UTILS
 
 
 @lru_cache(maxsize=None)
 def get_enemy_life(level):
+    switch = {
+        61: 10,
+        51: 9,
+        41: 8,
+        31: 7,
+        21: 6,
+        11: 5,
+        0: 4,
+    }
     base = _get_base(level)
-    return int(pow(base, 2) * 0.900900900 + level * base * 1.2012012)
+    min = floor(base / 2 + level)
+    min_last = base + min * switch[first(switch, lambda x: level >= x)]
+    return min_last * 10
 
 
 class CharacterSingleton(type):
@@ -140,8 +152,7 @@ class Character(metaclass=CharacterSingleton):
 
     @property
     def embed(self):
-        level_total_exp = \
-            get_enemy_life(self._level) * 20 * (5 if self._level > 1 else 1)
+        level_total_exp = self.get_level_xp(self._level)
         embed = Embed(title=self._name)
         embed.add_field(name='Niveau', value=str(self._level))
         embed.add_field(
@@ -212,13 +223,10 @@ class Character(metaclass=CharacterSingleton):
     @staticmethod
     def get_level_xp(level: int) -> int:
         """
-        @param level: The character's level.
-        @return: The amount of xp required to progress to the next level.
+        :param level: The character's level.
+        :return: The amount of xp required to progress to the next level.
         """
-        level_xp = get_enemy_life(level) * 20
-        if level > 1:
-            level_xp *= 5
-        return level_xp
+        return get_enemy_life(level) * level * 15
 
     def gain_xp(self, xp) -> bool:
         level_up = False
