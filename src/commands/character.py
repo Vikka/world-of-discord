@@ -211,8 +211,8 @@ class Personnage(Cog):
                 f"\"!help supprimer\" pour avoir de l'aide."
             )
 
-    @command(name='classement', aliases=['leaderboard', 'ranking'], hidden=True,
-             checks=[no_direct_message, in_command_channel])
+    @command(name='classement', aliases=['leaderboard', 'ranking', 'rank'],
+             hidden=True, checks=[no_direct_message, in_command_channel])
     async def leaderboard(self, context: Context, *, type_: Optional[ranking_type] = None):
         if type_ == GLOBAL_RANKING:
             guilds = self.bot.guilds

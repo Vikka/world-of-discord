@@ -45,7 +45,7 @@ TUTORIAL_CHAPTER = {
        "un personnage. Pour se faire, il te suffit d'utiliser la "
        "commande `!creer` suivie du prénom de ton personnage (tu peux "
        "préciser un nom de famille si tu le souhaites). Tu peux créer "
-       "plusieurs personnages.\n"
+       "1 personnage.\n"
        "\n"
        "Ensuite, sache que ton personnage "
        "principal jouera automatiquement pendants 5 minutes lorsque tu es "
@@ -69,12 +69,15 @@ class Tutoriel(Cog):
         self.bot = bot
 
     @command(name='tutoriel', usage='<n° de chapitre(0 par défaut)>',
-             aliases=['tutorial', 'tuto'], checks=[in_command_channel])
+             aliases=['tutorial', 'tuto', 'aide'], checks=[in_command_channel])
     async def tutorial(self, context: Context, *, chapter: check_chapter = 0):
-        f"""
+        """
         Permet de commencer le tutoriel pour jouer.
 
-        {SUMMARY}
+        Liste des chapitres:
+            Chapitre -1 : Installation du jeu sur un serveur.
+            Chapitre 0 : Présentation du jeu.
+            Chapitre 1 : Créer un personnage pour démarrer l'aventure.
         """
         await context.send(TUTORIAL_CHAPTER[chapter])
 
