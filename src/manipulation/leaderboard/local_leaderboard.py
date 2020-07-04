@@ -11,19 +11,23 @@ from src.manipulation.leaderboard.utils import create_embed
 def get_max_xp(member: Member):
     path, characters = get_path_and_characters(member, member.guild)
     max_xp = 0
+    name = ''
     for character in characters.values():
-        max_xp = max(character.total_exp, max_xp)
-    return max_xp
+        if character.total_exp > max_xp:
+            name = character._name
+            max_xp = character.total_exp
+    return max_xp, name
 
 
-def get_members_sorted(guild: Guild) -> List[Tuple[str, int]]:
+def get_members_sorted(guild: Guild) -> List[Tuple[str, str, int]]:
     members = list()
     for member in guild.members:
-        if (max_xp := get_max_xp(member)) > 0:
-            members.append((member.name, max_xp))
+        max_xp, name = get_max_xp(member)
+        if max_xp > 0:
+            members.append((member.name, name, max_xp))
     if not members:
         raise NoRecordedPlayers
-    return sorted(members, key=lambda x: x[1], reverse=True)
+    return sorted(members, key=lambda x: x[2], reverse=True)
 
 
 async def local_leaderboard(context: Context, guild: Guild, author: Member):

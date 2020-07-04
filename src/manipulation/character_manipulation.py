@@ -1,7 +1,7 @@
 from json import dumps, load
 from os import makedirs
 from os.path import isfile, dirname
-from typing import Dict
+from typing import Dict, Tuple
 
 from discord import Member, Guild
 
@@ -30,7 +30,8 @@ def get_leader(characters):
             return character
 
 
-def get_path_and_characters(author: Member, guild: Guild):
+def get_path_and_characters(author: Member, guild: Guild) \
+        -> Tuple[str, Dict[str, Character]]:
     file_name = f'{author.id}-{guild.id}.json'
     path = USER_PATH.format(guild.id, file_name)
     characters = _get_character(path)
