@@ -40,8 +40,10 @@ class Admin(Cog):
     async def giveaway(self, context: Context, *, msg):
         members = list()
         for member in context.guild.members:
-            if (max_xp := get_max_xp(member)) > 0:
-                members.append((member.name, max_xp))
+            max_xp, name = get_max_xp(member)
+            if max_xp > 0:
+                members.append((member.nick if member.nick else member.name,
+                                max_xp))
         winner = choice(members)[0]
         await context.send(f'La grande loterie va bientôt commencer !!!\n'
                            f'Installez vous, prenez des sucreries, nous allons'
