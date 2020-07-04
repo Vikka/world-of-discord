@@ -57,7 +57,7 @@ class Personnage(Cog):
         Enregistre un nouveau personnage.
 
         Te permet de créer un personnage lié au serveur sur lequel tu
-        effectues cette commande. Tu peux créer jusqu'à 0 personnages.
+        effectues cette commande. Tu peux créer jusqu'à 1 personnages.
         """
         author, guild, path, characters = _init_data(context)
 
@@ -170,7 +170,7 @@ class Personnage(Cog):
                 "N'hésite pas à taper la commande \"!help Personnage\" pour "
                 "avoir de l'aide.")
 
-    @command(name='fiche', aliases=['sheet'],
+    @command(name='fiche', aliases=['profil', 'sheet'],
              checks=[no_direct_message, in_command_channel])
     async def character_sheet(self, context: Context, *,
                               name: Optional[is_name]):
@@ -212,7 +212,7 @@ class Personnage(Cog):
             )
 
     @command(name='classement', aliases=['leaderboard', 'ranking', 'rank'],
-             hidden=True, checks=[no_direct_message, in_command_channel])
+             checks=[no_direct_message, in_command_channel])
     async def leaderboard(self, context: Context, *, type_: Optional[ranking_type] = None):
         if type_ == GLOBAL_RANKING:
             guilds = self.bot.guilds
