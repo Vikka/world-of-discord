@@ -12,7 +12,7 @@ def get_user_files():
     for (dirpath, dirnames, filenames) in walk(user_path):
         if not filenames:
             continue
-        f.extend(f'{dirpath}\\{filename}' for filename in filenames)
+        f.extend(f'{dirpath}/{filename}' for filename in filenames)
     return f
 
 
