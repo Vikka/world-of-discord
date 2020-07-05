@@ -1,20 +1,20 @@
-import weakref
 from functools import lru_cache
 from math import floor
 from pprint import pprint
 from time import time
-from typing import Optional
+from typing import Optional, List
+from weakref import ref
 
 from discord import Embed, TextChannel
 
 from src.classes.Item import _get_base, Item
+from src.constants import ITEMS_UTILS
+from src.constants import JSON_KEY
 from src.constants.FIGHT import ROUND_TIME
-from src.constants.ITEMS_UTILS import COMMON, WEAPON_TYPES
+from src.constants.ITEMS_UTILS import COMMON
 from src.constants.JSON_KEY import TOTAL_EXP, WEAPONS, ID, NAME, POWER, LEVEL, \
     LOCK, EXP, CURRENT
 from src.utils import clear_instances, first
-from src.constants import JSON_KEY
-from src.constants import ITEMS_UTILS
 
 
 @lru_cache(maxsize=None)
@@ -35,14 +35,14 @@ def get_enemy_life(level):
 
 
 class CharacterSingleton(type):
-    _instances = {}
+    _instances: List[ref] = {}
 
     def __call__(cls, id_, *args, **kwargs):
         clear_instances(Character)
         if id_ not in cls._instances:
             instance = super(CharacterSingleton, cls).__call__(id_, *args,
                                                                **kwargs)
-            weak_instance = weakref.ref(instance)
+            weak_instance = ref(instance)
             cls._instances[id_] = weak_instance
         else:
             instance = cls._instances[id_]()

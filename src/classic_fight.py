@@ -45,15 +45,11 @@ async def fight(fighter: Character, channel: TextChannel, author: Member,
     fighter.update_lock()
     store_characters(path, characters)
     current = get_enemy_life(fighter._level)
-    next_hit = 0
     print(f'{strftime("%D")}{author.display_name} hit')
     print(f'{time() < fighter.lock}, {time()}, {int(fighter.lock)}')
     while time() < fighter.lock:
-        if next_hit >= time():
-            await sleep(ATTACK_SPEED/6)
-            continue
-        print(
-            f'{strftime("%X")} {author.display_name} hit for {fighter.power} damages, {current - fighter.power} remaining.')
+        print(f'{strftime("%X")} {author.display_name} hit for {fighter.power}'
+              f' damages, {current - fighter.power} remaining.')
         if (last := current - fighter.power) > 0:
             current = last
         else:
@@ -70,7 +66,7 @@ async def fight(fighter: Character, channel: TextChannel, author: Member,
                     f"{fighter._level} !",
                     embed=fighter.embed)
             store_characters(path, characters)
-        next_hit = time() + ATTACK_SPEED
+        await sleep(ATTACK_SPEED)
 
 
 async def start_classic_fight(message: Message) -> None:

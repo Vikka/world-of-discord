@@ -23,7 +23,12 @@ COMMAND_PREFIX = os.getenv('COMMAND_PREFIX')
 
 
 class CustomBot(Bot):
-    maintenance: True
+    maintenance: bool
+    command_runing: list
+
+    def __init__(self, command_prefix, **options):
+        super().__init__(command_prefix, **options)
+        self.command_runing = list()
 
 
 bot: CustomBot = CustomBot(command_prefix=COMMAND_PREFIX, case_insensitive=True)

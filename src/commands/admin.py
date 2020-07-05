@@ -5,8 +5,8 @@ from discord import Guild, PermissionOverwrite
 from discord.ext.commands import Cog, command, Context, Bot
 from discord.utils import get
 
-from src.errors.guild import ChannelAlreadyExist
 from src.commands.utils import is_admin, is_owner
+from src.errors.guild import ChannelAlreadyExist
 from src.manipulation.leaderboard.local_leaderboard import get_max_xp
 
 
@@ -61,6 +61,7 @@ class Admin(Cog):
         await context.send(f"{winner.capitalize()} !!!!!!!!!!!!")
         await sleep(1)
         await context.send(f'{winner} remporte donc {msg}!!!!')
+
 
 def setup(bot):
     bot.add_cog(Admin(bot))
