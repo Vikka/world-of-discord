@@ -5,6 +5,7 @@ from discord import Guild, PermissionOverwrite
 from discord.ext.commands import Cog, command, Context, Bot
 from discord.utils import get
 
+from src.manipulation.reset_lock import clean_lock
 from src.commands.utils import is_admin, is_owner
 from src.errors.guild import ChannelAlreadyExist
 from src.manipulation.leaderboard.local_leaderboard import get_max_xp
@@ -20,6 +21,7 @@ class Admin(Cog):
         Permet de quitter le bot avec un peu de cleanup.
         """
         await self.bot.logout()
+        clean_lock()
 
     @command(checks=[is_owner])
     async def install(self, context: Context):
