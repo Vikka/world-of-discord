@@ -1,9 +1,7 @@
-class GuildError(Exception):
-    """The base exception type for errors that involve errors
-    regarding guilds.
+from discord.ext.commands import CommandError
 
-    This inherits from :exc:`Exception`.
-    """
+
+class GuildError(CommandError):
     pass
 
 
