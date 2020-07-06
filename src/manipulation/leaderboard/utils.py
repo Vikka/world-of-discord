@@ -20,9 +20,15 @@ def create_embed(members: List[Tuple[int, str, int]], author: Member,
     numbers, names, exp_max, has_char, author_pos, author_xp, type_ \
         = leaderboard_init(type_)
     for i, member in enumerate(members[:20], start=1):
-        numbers.append(str(i))
-        names.append(member[1])
-        exp_max.append(f'{member[2]:,}')
+        numbers.append(f'{"**" if member[0] == (author.id if type_ == "membres" else author.guild.id) else ""}'
+                       f'{i}'
+                       f'{"**" if member[0] == (author.id if type_ == "membres" else author.guild.id) else ""}')
+        names.append(f'{"**" if member[0] == (author.id if type_ == "membres" else author.guild.id) else ""}'
+                     f'{member[1]}'
+                     f'{"**" if member[0] == (author.id if type_ == "membres" else author.guild.id) else ""}')
+        exp_max.append(f'{"**" if member[0] == (author.id if type_ == "membres" else author.guild.id) else ""}'
+                       f'{member[2]:,}'
+                       f'{"**" if member[0] == (author.id if type_ == "membres" else author.guild.id) else ""}')
     for i, member in enumerate(members, start=1):
         if member[0] == (author.id if type_ == "membres" else author.guild.id):
             author_pos = i
