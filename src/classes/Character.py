@@ -72,9 +72,8 @@ class Character(metaclass=CharacterSingleton):
 
     @classmethod
     def from_json(cls, json: dict):
-        total_exp = json[TOTAL_EXP] if TOTAL_EXP in json else 0
-        weapon = Item(json=json[WEAPONS]) \
-            if WEAPONS in json and json[WEAPONS] else None
+        total_exp = json.get(TOTAL_EXP, default=0)
+        weapon = Item(json=json[WEAPONS]) if json.get(WEAPONS) else None
         helmet = Item(json=json[JSON_KEY.HELMET]) \
             if JSON_KEY.HELMET in json and json[JSON_KEY.HELMET] else None
         legs = Item(json=json[JSON_KEY.LEGS]) \
