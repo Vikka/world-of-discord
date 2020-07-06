@@ -12,7 +12,7 @@ def leaderboard_init(type_: int) -> Tuple[List, List, List, bool, str, str,
     return list(), list(), list(), False, str(), str(), leaderboard_type[type_]
 
 
-def create_embed(members: List[Tuple[str, str, int]], author: Member,
+def create_embed(members: List[Tuple[int, str, int]], author: Member,
                  type_: int):
     """
     Thanks to StillinBed for his help !
@@ -24,7 +24,7 @@ def create_embed(members: List[Tuple[str, str, int]], author: Member,
         names.append(member[1])
         exp_max.append(f'{member[2]:,}')
     for i, member in enumerate(members, start=1):
-        if member[0] == author.name:
+        if member[0] == (author.id if type_ == "membres" else author.guild.id):
             author_pos = i
             author_xp = member[2]
             has_char = True

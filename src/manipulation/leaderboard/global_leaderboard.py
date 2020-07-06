@@ -18,12 +18,12 @@ def _max_xp(guild: Guild) -> int:
     return max_exp
 
 
-def _guild_xp_sorted(guilds: List[Guild]) -> List[Tuple[str, int]]:
+def _guild_xp_sorted(guilds: List[Guild]) -> List[Tuple[str, str, int]]:
     guild_list = list()
     for guild in guilds:
         if max_xp := _max_xp(guild):
-            guild_list.append((guild.name, max_xp))
-    return sorted(guild_list, key=lambda x: x[1], reverse=True)
+            guild_list.append((guild.id, guild.name, max_xp))
+    return sorted(guild_list, key=lambda x: x[2], reverse=True)
 
 
 async def global_leaderboard(context: Context, guilds: List[Guild],

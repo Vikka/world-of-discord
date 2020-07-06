@@ -19,12 +19,12 @@ def get_max_xp(member: Member):
     return max_xp, name
 
 
-def get_members_sorted(guild: Guild) -> List[Tuple[str, str, int]]:
+def get_members_sorted(guild: Guild) -> List[Tuple[int, str, int]]:
     members = list()
     for member in guild.members:
         max_xp, name = get_max_xp(member)
         if max_xp > 0:
-            members.append((member.name, name, max_xp))
+            members.append((member.id, name, max_xp))
     if not members:
         raise NoRecordedPlayers
     return sorted(members, key=lambda x: x[2], reverse=True)

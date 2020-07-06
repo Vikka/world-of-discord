@@ -222,11 +222,11 @@ class Personnage(Cog):
 
     @leaderboard.error
     async def leaderboard_error(self, context: Context, error):
-        print(error)
         if isinstance(error, CommandInvokeError):
             await context.send("Aucun joueurs n'a encore joué, le classement "
                                "n'est donc pas disponible.")
-
+        else:
+            raise error
 
 def setup(bot):
     bot.add_cog(Personnage(bot))
