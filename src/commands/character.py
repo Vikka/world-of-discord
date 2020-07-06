@@ -213,7 +213,8 @@ class Personnage(Cog):
 
     @command(name='classement', aliases=['leaderboard', 'ranking', 'rank'],
              checks=[no_direct_message, in_command_channel])
-    async def leaderboard(self, context: Context, *, type_: Optional[ranking_type] = None):
+    async def leaderboard(self, context: Context, *,
+                          type_: Optional[ranking_type] = None):
         if type_ == GLOBAL_RANKING:
             guilds = self.bot.guilds
             await global_leaderboard(context, guilds, context.author)
@@ -227,6 +228,7 @@ class Personnage(Cog):
                                "n'est donc pas disponible.")
         else:
             raise error
+
 
 def setup(bot):
     bot.add_cog(Personnage(bot))
