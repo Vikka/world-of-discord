@@ -11,7 +11,7 @@ from src.classes.Item import _get_base, Item
 from src.constants import ITEMS_UTILS
 from src.constants import JSON_KEY
 from src.constants.FIGHT import ROUND_TIME
-from src.constants.ITEMS_UTILS import COMMON
+from src.constants.ITEMS_UTILS import COMMON, UNCOMMON
 from src.constants.JSON_KEY import TOTAL_EXP, WEAPONS, ID, NAME, POWER, LEVEL, \
     LOCK, EXP, CURRENT
 from src.utils import clear_instances, first
@@ -336,7 +336,8 @@ def get_loot(fighter: Character, channel: TextChannel):
     new_item = Item(fighter._level)
     equip_item = weapon_changer(new_item)
 
-    if not equip_item(fighter, new_item) or new_item.quality == COMMON \
+    if not equip_item(fighter, new_item) \
+            or new_item.quality in [COMMON, UNCOMMON] \
             or not channel:
         return
     return f'{fighter._name} vient de récupérer cet objet :', new_item.embed
