@@ -24,7 +24,7 @@ def is_name(name: str) -> str:
         return ''
     if not name_pattern.match(name):
         raise BadArgument
-    return name.lower().capitalize()
+    return name.lower().title()
 
 
 def check_ranking_type(type_: str) -> str:
@@ -55,6 +55,9 @@ class Personnage(Cog):
 
         Te permet de créer un personnage lié au serveur sur lequel tu
         effectues cette commande. Tu peux créer jusqu'à 1 personnages.
+
+        Attention, la taille du nom et du prénom doit être comprise entre
+        2 et 15 caractères.
         """
         author, guild, path, characters = _init_data(context)
 
@@ -209,7 +212,8 @@ class Personnage(Cog):
             )
 
     @command(name='classement', aliases=['leaderboard', 'ranking', 'rank'],
-             checks=[no_direct_message, in_command_channel])
+             checks=[no_direct_message, in_command_channel],
+             usage='[membres(default), guildes]')
     async def leaderboard(self, context: Context, *,
                           ranking_type: check_ranking_type = DEFAULT_RANKING):
         print(ranking_type)
