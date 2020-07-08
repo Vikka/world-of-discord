@@ -7,15 +7,15 @@ from weakref import ref
 
 from discord import Embed, TextChannel
 
-from constants.CONSTANTS import LEVEL_VALUE, EXP_VALUE, POWER_VALUE, \
+from src.constants.CONSTANTS import LEVEL_VALUE, EXP_VALUE, POWER_VALUE, \
     KILLS_VALUE, RARES_VALUE
 from src.classes.Item import _get_base, Item
 from src.constants import ITEMS_UTILS
 from src.constants import JSON_KEY
 from src.constants.FIGHT import ROUND_TIME
 from src.constants.ITEMS_UTILS import COMMON, UNCOMMON, RARE
-from src.constants.JSON_KEY import TOTAL_EXP, WEAPONS, ID, NAME, POWER, LEVEL, \
-    LOCK, EXP, CURRENT, KILLS, LOOTS, COMMONS, UNCOMMONS, RARES
+from src.constants.JSON_KEY import TOTAL_EXP, WEAPONS, ID, NAME, POWER, \
+    LEVEL, LOCK, EXP, CURRENT, KILLS, LOOTS, COMMONS, UNCOMMONS, RARES
 from src.utils import clear_instances, first
 
 
