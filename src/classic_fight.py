@@ -39,6 +39,37 @@ async def init_fight(author: Member, guild: Guild) \
     return leader, path, characters
 
 
+async def kill_log(loot, level_up, channel, fighter):
+    if loot:
+        await channel.send(loot[0], embed=loot[1])
+    if level_up:
+        await channel.send(
+            f"{fighter._name} vient d'atteindre le niveau "
+            f"{fighter._level} !",
+            embed=fighter.embed)
+
+
+async def killed(fighter, channel, path, characters):
+    current = get_enemy_life(fighter._level)
+    loot = get_loot(fighter, channel)
+    level_up = fighter.gain_xp(current)
+
+    if channel:
+        await kill_log(loot, level_up, channel, fighter)
+
+    store_characters(path, characters)
+    return current
+
+
+async def hit(current, author, fighter, channel, path, characters):
+    print(f'{strftime("%X")} {author.display_name} hit for {fighter.power}'
+          f' damages, {current - fighter.power} remaining.')
+
+    return await killed(fighter, channel, path, characters) \
+        if (last := current - fighter.power) <= 0 \
+        else last
+
+
 async def fight(fighter: Character, channel: TextChannel, author: Member,
                 path: str, characters: Dict[str, Character]):
     print('fight')
@@ -48,24 +79,8 @@ async def fight(fighter: Character, channel: TextChannel, author: Member,
     print(f'{strftime("%D")}{author.display_name} hit')
     print(f'{time() < fighter.lock}, {time()}, {int(fighter.lock)}')
     while time() < fighter.lock:
-        print(f'{strftime("%X")} {author.display_name} hit for {fighter.power}'
-              f' damages, {current - fighter.power} remaining.')
-        if (last := current - fighter.power) > 0:
-            current = last
-        else:
-            current = get_enemy_life(fighter._level)
-            loot = get_loot(fighter, channel)
-            level_up = fighter.gain_xp(current)
-            if not channel:
-                continue
-            if loot:
-                await channel.send(loot[0], embed=loot[1])
-            if level_up:
-                await channel.send(
-                    f"{fighter._name} vient d'atteindre le niveau "
-                    f"{fighter._level} !",
-                    embed=fighter.embed)
-            store_characters(path, characters)
+        current = await hit(current, author, fighter, channel, path,
+                            characters)
         await sleep(ATTACK_SPEED)
 
 
