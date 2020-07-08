@@ -57,7 +57,7 @@ class Personnage(Cog):
         self.bot = bot
 
     @command(name='creer', usage='[<Prénom>, <Prénom Nom>]',
-             aliases=['créer', 'create'],
+             aliases=['créer', 'create', 'new'],
              checks=[no_direct_message, in_command_channel])
     async def create(self, context: Context, *, name: is_name):
         """
