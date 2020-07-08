@@ -54,6 +54,8 @@ async def killed(fighter, channel, path, characters):
     loot = get_loot(fighter, channel)
     level_up = fighter.gain_xp(current)
 
+    fighter.kills += 1
+
     if channel:
         await kill_log(loot, level_up, channel, fighter)
 

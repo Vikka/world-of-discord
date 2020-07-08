@@ -7,13 +7,15 @@ from weakref import ref
 
 from discord import Embed, TextChannel
 
+from constants.CONSTANTS import LEVEL_VALUE, EXP_VALUE, POWER_VALUE, \
+    KILLS_VALUE, RARES_VALUE
 from src.classes.Item import _get_base, Item
 from src.constants import ITEMS_UTILS
 from src.constants import JSON_KEY
 from src.constants.FIGHT import ROUND_TIME
-from src.constants.ITEMS_UTILS import COMMON, UNCOMMON
+from src.constants.ITEMS_UTILS import COMMON, UNCOMMON, RARE
 from src.constants.JSON_KEY import TOTAL_EXP, WEAPONS, ID, NAME, POWER, LEVEL, \
-    LOCK, EXP, CURRENT
+    LOCK, EXP, CURRENT, KILLS, LOOTS, COMMONS, UNCOMMONS, RARES
 from src.utils import clear_instances, first
 
 
@@ -56,7 +58,7 @@ class Character(metaclass=CharacterSingleton):
     _power: int
     _level: int
     _exp: int
-    total_exp: int
+    _total_exp: int
     is_leader: bool
     _weapon: Optional[Item]
     helmet: Optional[Item]
@@ -69,6 +71,11 @@ class Character(metaclass=CharacterSingleton):
     shoulders: Optional[Item]
     wrist: Optional[Item]
     lock: int
+    _kills: int
+    _loots: int
+    _commons: int
+    _uncommons: int
+    _rares: int
 
     @classmethod
     def from_json(cls, json: dict):
@@ -94,10 +101,17 @@ class Character(metaclass=CharacterSingleton):
         wrist = Item(json=json[JSON_KEY.WRIST]) \
             if JSON_KEY.WRIST in json and json[JSON_KEY.WRIST] else None
         lock = json[LOCK] if LOCK in json else None
+        kills = json.get(KILLS, 0)
+        loots = json.get(LOOTS, 0)
+        commons = json.get(COMMONS, 0)
+        uncommons = json.get(UNCOMMONS, 0)
+        rares = json.get(RARES, 0)
         return cls(json[ID], json[NAME], json[POWER],
                    json[LEVEL], json[EXP], json[CURRENT], lock,
                    total_exp, weapon, helmet, legs, boots, chest,
-                   gloves, belt, cloak, shoulders, wrist)
+                   gloves, belt, cloak, shoulders, wrist, kills,
+                   loots, commons, uncommons, rares,
+                   )
 
     def __init__(self, id_: str, name: str, power: Optional[int] = None,
                  level: int = 1, exp: int = 0, is_leader: bool = True,
@@ -112,6 +126,8 @@ class Character(metaclass=CharacterSingleton):
                  cloak: Optional[Item] = None,
                  shoulders: Optional[Item] = None,
                  wrist: Optional[Item] = None,
+                 kills: int = 0, loots: int = 0, commons: int = 0,
+                 uncommons: int = 0, rares: int = 0,
                  ):
         """Create a Item instance."""
         self.id = id_
@@ -119,7 +135,7 @@ class Character(metaclass=CharacterSingleton):
         self._power = _get_base(level) if power is None else power
         self._level = level
         self._exp = exp
-        self.total_exp = total_exp
+        self._total_exp = total_exp
         self.is_leader = is_leader
         self._weapon = weapon
         self.helmet = helmet
@@ -132,6 +148,11 @@ class Character(metaclass=CharacterSingleton):
         self.shoulders = shoulders
         self.wrist = wrist
         self._lock = lock
+        self._kills = kills
+        self._loots = loots
+        self._commons = commons
+        self._uncommons = uncommons
+        self._rares = rares
 
     def __repr__(self):
         """Create a string representation of the Character."""
@@ -160,7 +181,7 @@ class Character(metaclass=CharacterSingleton):
         )
         embed.add_field(
             name='Expérience totale',
-            value=f'{self.total_exp:,}'
+            value=f'{self._total_exp:,}'
         )
         embed.add_field(name='Puissance (niveaux + objets)',
                         value=f'{self.power:,} ({self._power:,} '
@@ -192,6 +213,94 @@ class Character(metaclass=CharacterSingleton):
             total += self.shoulders.power
         return total
 
+    @property
+    def total_exp(self):
+        return self._total_exp
+
+    @total_exp.setter
+    def total_exp(self, value: int):
+        self._total_exp = value
+
+    @property
+    def level(self):
+        return self._level
+
+    @level.setter
+    def level(self, value: int):
+        self._level = value
+
+    @property
+    def kills(self):
+        return self._kills
+
+    @kills.setter
+    def kills(self, value: int):
+        self._kills = value
+
+    @property
+    def loots(self):
+        return self._loots
+
+    @loots.setter
+    def loots(self, value: int):
+        self._loots = value
+
+    def incr_loots(self):
+        self._loots += 1
+
+    @property
+    def commons(self):
+        return self._commons
+
+    @commons.setter
+    def commons(self, value: int):
+        self._commons = value
+
+    def incr_commons(self):
+        self._commons += 1
+
+    @property
+    def uncommons(self):
+        return self._uncommons
+
+    @uncommons.setter
+    def uncommons(self, value: int):
+        self._uncommons = value
+
+    def incr_uncommons(self):
+        self._uncommons += 1
+
+    @property
+    def rares(self):
+        return self._rares
+
+    @rares.setter
+    def rares(self, value: int):
+        self._rares = value
+
+    def incr_rares(self):
+        self._rares += 1
+
+    def get_value(self, key):
+        switch = {
+            LEVEL_VALUE: self.level,
+            EXP_VALUE: self.total_exp,
+            POWER_VALUE: self.power,
+            KILLS_VALUE: self.kills,
+            RARES_VALUE: self.rares,
+        }
+        key = first(switch, lambda iterable: key in iterable)
+        return switch.get(key, 0)
+
+    def increment_stat(self, key):
+        switch = {
+            LOOTS: self.incr_loots,
+            COMMON: self.incr_commons,
+            UNCOMMON: self.incr_uncommons,
+            RARE: self.incr_rares,
+        }
+        switch.get(first(switch, lambda x: key in x))()
+
     def level_up(self):
         self._level += 1
         self._power = _get_base(self._level)
@@ -203,7 +312,7 @@ class Character(metaclass=CharacterSingleton):
             'current': self.is_leader,
             'level': self._level,
             'exp': self._exp,
-            'total_exp': self.total_exp,
+            'total_exp': self._total_exp,
             'power': self._power,
             'weapons': self._weapon.to_json() if self._weapon else None,
             'helmet': self.helmet.to_json() if self.helmet else None,
@@ -215,7 +324,12 @@ class Character(metaclass=CharacterSingleton):
             'cloak': self.cloak.to_json() if self.cloak else None,
             'shoulders': self.shoulders.to_json() if self.shoulders else None,
             'wrist': self.wrist.to_json() if self.wrist else None,
-            'lock': self.lock
+            'lock': self.lock,
+            'kills': self._kills,
+            'loots': self._loots,
+            'commons': self._commons,
+            'uncommons': self._uncommons,
+            'rares': self._rares,
         }
         return json
 
@@ -230,7 +344,7 @@ class Character(metaclass=CharacterSingleton):
     def gain_xp(self, xp) -> bool:
         level_up = False
         level_xp = self.get_level_xp(self._level)
-        self.total_exp += xp
+        self._total_exp += xp
         self._exp += xp
         while self._exp >= level_xp:
             self.level_up()
@@ -335,6 +449,9 @@ def get_loot(fighter: Character, channel: TextChannel):
     print('get_loot')
     new_item = Item(fighter._level)
     equip_item = weapon_changer(new_item)
+
+    fighter.increment_stat(new_item.quality)
+    fighter.increment_stat(LOOTS)
 
     if not equip_item(fighter, new_item) \
             or new_item.quality in [COMMON, UNCOMMON] \

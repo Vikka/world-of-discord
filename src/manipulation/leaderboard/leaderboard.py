@@ -3,41 +3,43 @@ from typing import List, Tuple, Optional, Union
 
 from discord import Embed, Guild, Member
 
-from constants.CONSTANTS import DEFAULT_RANKING, GLOBAL_RANKING
+from constants.CONSTANTS import DEFAULT_RANKING, GLOBAL_RANKING, LEVEL_VALUE, \
+    EXP_VALUE, POWER_VALUE, KILLS_VALUE, VALUE_ARRAY
 from errors.character import NoRecordedPlayers
 from manipulation.character_manipulation import get_path_and_characters
+from utils import first
 
 Leaderboard = namedtuple('Leaderboard', ['id', 'name', 'value'])
 
 
-def member_max_xp(member: Member) -> Tuple[int, str]:
+def member_max_value(member: Member, key: str) -> Tuple[int, str]:
     path, characters = get_path_and_characters(member, member.guild)
-    max_xp = 0
+    max_value = 0
     name = ''
 
     for character in characters.values():
-        if character.total_exp > max_xp:
+        if character.get_value(key) > max_value:
             name = character._name
-            max_xp = character.total_exp
-    return max_xp, name
+            max_value = character.get_value(key)
+    return max_value, name
 
 
-def guild_max_xp(guild: Guild) -> int:
+def guild_max_value(guild: Guild, key: str) -> int:
     max_exp = 0
 
     for member in guild.members:
-        tmp_xp, _ = member_max_xp(member)
+        tmp_xp, _ = member_max_value(member, key)
         max_exp = max(max_exp, tmp_xp)
     return max_exp
 
 
-def get_members(guild: Guild) -> List[Tuple[int, str, int]]:
+def get_members(guild: Guild, key: str) -> List[Leaderboard]:
     members = list()
 
     for member in guild.members:
-        max_xp, name = member_max_xp(member)
-        if max_xp > 0:
-            members.append(Leaderboard(member.id, name, max_xp))
+        value, name = member_max_value(member, key)
+        if value > 0:
+            members.append(Leaderboard(member.id, name, value))
     if not members:
         raise NoRecordedPlayers
     return sorted(members,
@@ -45,10 +47,10 @@ def get_members(guild: Guild) -> List[Tuple[int, str, int]]:
                   reverse=True)
 
 
-def get_guilds(guilds: List[Guild]) -> List[Leaderboard]:
+def get_guilds(guilds: List[Guild], key: str) -> List[Leaderboard]:
     return sorted((Leaderboard(guild.id, guild.name, max_xp)
                    for guild in guilds
-                   if (max_xp := guild_max_xp(guild))),
+                   if (max_xp := guild_max_value(guild, key))),
                   key=lambda x: x.value,
                   reverse=True)
 
@@ -76,24 +78,25 @@ def get_author(members: List[Leaderboard], id_: int) \
 
 
 def create_embed(members: List[Leaderboard], author: Member,
-                 ranking_type: str) -> Embed:
+                 ranking_type: str, key: str) -> Embed:
     """
     Thanks to StillinBed for his help !
     """
     id_: int = author.id if ranking_type == "membres" else author.guild.id
     numbers, names, values = get_ranking(members, id_)
-    author_pos, author_xp, has_char = get_author(members, id_)
+    author_pos, author_value, has_char = get_author(members, id_)
     numbers = '\n'.join(numbers)
     names = '\n'.join(names)
     exp_max = '\n'.join(values)
+    key = first(VALUE_ARRAY, lambda iterable: key in iterable)[0].capitalize()
 
     embed = Embed(title=f'Classement des {ranking_type}')
     embed.add_field(name='n°', value=numbers)
     embed.add_field(name='Nom', value=names)
-    embed.add_field(name='Exp max', value=exp_max)
+    embed.add_field(name=key, value=exp_max)
     if has_char:
         embed.add_field(name='Position', value=f'{author_pos}')
-        embed.add_field(name='xp maximum', value=f'{author_xp:,}')
+        embed.add_field(name=key, value=f'{author_value:,}')
     return embed
 
 
@@ -104,6 +107,6 @@ switch = {
 
 
 def leaderboard_embed(guilds: Union[Guild, List[Guild]], author: Member,
-                      ranking_type: str) -> Embed:
+                      ranking_type: str, value_type: str) -> Embed:
     ranking_func = switch.get(ranking_type, get_members)
-    return create_embed(ranking_func(guilds), author, ranking_type)
+    return create_embed(ranking_func(guilds, value_type), author, ranking_type, value_type)

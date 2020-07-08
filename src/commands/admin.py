@@ -5,7 +5,8 @@ from discord import Guild, PermissionOverwrite
 from discord.ext.commands import Cog, command, Context, Bot
 from discord.utils import get
 
-from manipulation.leaderboard.leaderboard import member_max_xp
+from constants.CONSTANTS import DEFAULT_VALUE
+from manipulation.leaderboard.leaderboard import member_max_value
 from src.manipulation.reset_lock import clean_lock
 from src.commands.utils import is_admin, is_owner
 from src.errors.guild import ChannelAlreadyExist
@@ -42,7 +43,7 @@ class Admin(Cog):
     async def giveaway(self, context: Context, *, msg):
         members = list()
         for member in context.guild.members:
-            max_xp, name = member_max_xp(member)
+            max_xp, name = member_max_value(member, DEFAULT_VALUE)
             if max_xp > 0:
                 members.append((member.nick if member.nick else member.name,
                                 max_xp))

@@ -1,7 +1,3 @@
-"""
-JSON_KEY.py
-Created by dturba at 30/06/2020
-"""
 WEAPONS = 'weapons'
 HELMET = 'helmet'
 LEGS = 'legs'
@@ -20,3 +16,8 @@ NAME = 'name'
 POWER = 'power'
 EXP = 'exp'
 CURRENT = 'current'
+KILLS = 'kills'
+LOOTS = 'loots'
+COMMONS = 'commons'
+UNCOMMONS = 'uncommons'
+RARES = 'rares'

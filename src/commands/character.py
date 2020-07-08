@@ -1,5 +1,5 @@
 import re
-from typing import Optional, Union
+from typing import Optional
 
 from discord.ext.commands import Cog, Context, command, BadArgument, \
     MissingRequiredArgument, Bot, CommandInvokeError
@@ -7,7 +7,8 @@ from discord.ext.commands import Cog, Context, command, BadArgument, \
 from manipulation.leaderboard.leaderboard import leaderboard_embed
 from src.classes.Character import Character
 from src.commands.utils import no_direct_message, in_command_channel
-from src.constants.CONSTANTS import RANKING, GLOBAL_RANKING, DEFAULT_RANKING
+from src.constants.CONSTANTS import RANKING, GLOBAL_RANKING, DEFAULT_RANKING, \
+    DEFAULT_VALUE, VALUE
 from src.constants.REGEX import NAME_PATTERN, NAME_PATTERN_LINK
 from src.errors.character import TwoManyCharacters, UnknownCharacters, \
     NoCharacters, CharacterAlreadyExist
@@ -27,11 +28,20 @@ def is_name(name: str) -> str:
     return name.lower().title()
 
 
-def check_ranking_type(type_: str) -> str:
+def check_ranking_type(ranking_type: str) -> str:
     """For command annotation"""
-    if type_ not in RANKING:
+    if ranking_type not in RANKING:
+        print(ranking_type)
         raise BadArgument
-    return type_
+    return ranking_type
+
+
+def check_value_type(value_type: str) -> str:
+    """For command annotation"""
+    if value_type not in VALUE:
+        print(value_type)
+        raise BadArgument
+    return value_type
 
 
 def _init_data(context: Context):
@@ -212,15 +222,17 @@ class Personnage(Cog):
     @command(name='classement', aliases=['leaderboard', 'ranking', 'rank'],
              checks=[no_direct_message, in_command_channel],
              usage='[membres(default), guildes]')
-    async def leaderboard(self, context: Context, *,
-                          ranking_type: check_ranking_type = DEFAULT_RANKING):
+    async def leaderboard(self, context: Context,
+                          ranking_type: check_ranking_type = DEFAULT_RANKING,
+                          value_type: check_value_type = DEFAULT_VALUE):
         print(ranking_type)
         data = self.bot.guilds \
             if ranking_type == GLOBAL_RANKING\
             else context.guild
         await context.send(embed=leaderboard_embed(data,
                                                    context.author,
-                                                   ranking_type))
+                                                   ranking_type,
+                                                   value_type))
 
     @leaderboard.error
     async def leaderboard_error(self, context: Context, error):
