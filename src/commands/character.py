@@ -221,7 +221,8 @@ class Personnage(Cog):
 
     @command(name='classement', aliases=['leaderboard', 'ranking', 'rank'],
              checks=[no_direct_message, in_command_channel],
-             usage='[membres(default), guildes]')
+             usage='[membres(default), guildes] [niveaux(default), expérience,'
+                   ' puissance, tués, rares]')
     async def leaderboard(self, context: Context,
                           ranking_type: check_ranking_type = DEFAULT_RANKING,
                           value_type: check_value_type = DEFAULT_VALUE):
