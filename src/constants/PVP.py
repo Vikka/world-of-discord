@@ -1,4 +1,4 @@
-REGISTERED = 'Tu es entré en lice avec {}'
+REGISTERED = '{} est entré en lice !'
 DM_REGISTERED = 'Enregistrement de ton personnage'
 INIT = "Le duel peux commencer. Votre habilité au combat vous donne " \
        "l'initiative !"

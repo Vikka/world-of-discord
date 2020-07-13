@@ -261,11 +261,11 @@ class PVP1V1:
                 return LOSE, WIN
             att_stat.cooldown = 1
             return ("Tu es sur la défensive, mais ton adversaire te feinte et"
-                    f" pénètre ta défense ! Tu perds {floor(att_stat.power * .5)} "
+                    f" pénètre ta défense ! Tu perds {floor(def_stat.power * .5)} "
                     f"points de vie et tu es déstabilisé pendant un tour !",
                     "Votre adversaire est sur la défensive mais votre feinte "
                     "vous permet de pénètrer ses défenses. Vous lui infligez "
-                    f"{floor(att_stat.power * 0.5)} dégats et le déstabilisez un "
+                    f"{floor(def_stat.power * 0.5)} dégats et le déstabilisez un "
                     f"tour !")
         return ("Ton adversaire est encore déstabilisé, tu a été "
                 "inutilement prudent !",
