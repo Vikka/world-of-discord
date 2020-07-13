@@ -49,7 +49,7 @@ def compute_new_elo(total_games: int, elo: int, opponent_elo: int, win: float):
     elo_diff = tmp if (tmp := elo - opponent_elo) < 400 else 400
     score_probability = 1 / (1 + pow(10, -elo_diff / 400))
     new_elo = round(elo + coef * (win - score_probability))
-    return new_elo
+    return new_elo if new_elo >= 0 else 0
 
 
 if __name__ == '__main__':
@@ -65,5 +65,5 @@ if __name__ == '__main__':
     # print(initial_elo)
     # new_elo_ = compute_new_elo(30, initial_elo, 1150, 1)
     # print(new_elo_)
-    new_elo_ = compute_new_elo(1, 0, 0, 1)
+    new_elo_ = compute_new_elo(1, 0, 0, 0)
     print(new_elo_)
