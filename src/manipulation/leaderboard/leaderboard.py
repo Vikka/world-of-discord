@@ -4,8 +4,8 @@ from typing import List, Tuple, Optional, Union
 from discord import Embed, Guild, Member
 
 from src.classes.Character import get_path_and_characters
-from src.constants.CONSTANTS import VALUE_ARRAY, DEFAULT_RANKING, \
-    GLOBAL_RANKING
+from src.constants.CONSTANTS import VALUE_ARRAY, GUILDS_RANKING, \
+    MEMBERS_RANKING, RANKING_ARRAY
 from src.errors.character import NoRecordedPlayers
 from src.utils.utils import first
 
@@ -82,7 +82,11 @@ def create_embed(members: List[Leaderboard], author: Member,
     """
     Thanks to StillinBed for his help !
     """
-    id_: int = author.id if ranking_type == "membres" else author.guild.id
+    ranking_type = first(
+        RANKING_ARRAY,
+        lambda iterable: ranking_type in iterable
+    )[0]
+    id_: int = author.id if ranking_type in MEMBERS_RANKING else author.guild.id
     numbers, names, values = get_ranking(members, id_)
     author_pos, author_value, has_char = get_author(members, id_)
     numbers = '\n'.join(numbers)
@@ -101,12 +105,16 @@ def create_embed(members: List[Leaderboard], author: Member,
 
 
 switch = {
-    DEFAULT_RANKING: get_members,
-    GLOBAL_RANKING: get_guilds,
+    MEMBERS_RANKING: get_members,
+    GUILDS_RANKING: get_guilds,
 }
 
 
 def leaderboard_embed(guilds: Union[Guild, List[Guild]], author: Member,
                       ranking_type: str, value_type: str) -> Embed:
-    ranking_func = switch.get(ranking_type, get_members)
-    return create_embed(ranking_func(guilds, value_type), author, ranking_type, value_type)
+    ranking_func = switch.get(
+        first(switch,
+              lambda ranking_names: ranking_type in ranking_names)
+    )
+    return create_embed(ranking_func(guilds, value_type), author, ranking_type,
+                        value_type)

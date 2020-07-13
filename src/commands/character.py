@@ -7,8 +7,8 @@ from discord.ext.commands import Cog, Context, command, BadArgument, \
 from src.classes.Character import Character, get_path_and_characters, \
     store_characters, get_leader
 from src.commands.utils import no_direct_message, in_command_channel
-from src.constants.CONSTANTS import DEFAULT_VALUE, VALUE
-from src.constants.CONSTANTS import RANKING, GLOBAL_RANKING, DEFAULT_RANKING
+from src.constants.CONSTANTS import DEFAULT_VALUE, VALUE, GUILDS_RANKING
+from src.constants.CONSTANTS import RANKING, DEFAULT_RANKING
 from src.constants.REGEX import NAME_PATTERN, NAME_PATTERN_LINK
 from src.errors.character import TwoManyCharacters, UnknownCharacters, \
     NoCharacters, CharacterAlreadyExist
@@ -32,7 +32,7 @@ def check_ranking_type(ranking_type: str) -> str:
     if ranking_type not in RANKING:
         print(ranking_type)
         raise BadArgument
-    return ranking_type
+    return ranking_type.lower()
 
 
 def check_value_type(value_type: str) -> str:
@@ -40,7 +40,7 @@ def check_value_type(value_type: str) -> str:
     if value_type not in VALUE:
         print(value_type)
         raise BadArgument
-    return value_type
+    return value_type.lower()
 
 
 def _init_data(context: Context):
@@ -227,7 +227,7 @@ class Personnage(Cog):
                           value_type: check_value_type = DEFAULT_VALUE):
         print(ranking_type)
         data = self.bot.guilds \
-            if ranking_type == GLOBAL_RANKING \
+            if ranking_type in GUILDS_RANKING \
             else context.guild
         await context.send(embed=leaderboard_embed(data,
                                                    context.author,

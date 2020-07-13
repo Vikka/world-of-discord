@@ -1,8 +1,13 @@
 STAT_BASE = 9
 
 DEFAULT_RANKING = 'membres'
-GLOBAL_RANKING = 'guildes'
-RANKING = [DEFAULT_RANKING, GLOBAL_RANKING]
+MEMBERS_RANKING = (DEFAULT_RANKING, 'membre', 'members', 'member', 'm')
+GUILDS_RANKING = ('guildes', 'guilde', 'guilds', 'guid', 'g')
+RANKING_ARRAY = [
+    MEMBERS_RANKING,
+    GUILDS_RANKING
+]
+RANKING = MEMBERS_RANKING + GUILDS_RANKING
 
 DEFAULT_VALUE = 'niveaux'
 LEVEL_VALUE = (DEFAULT_VALUE, 'level', 'niv', 'lvl')
