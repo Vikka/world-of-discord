@@ -1,6 +1,6 @@
 from functools import lru_cache
 from json import dumps, load
-from math import floor, log, ceil
+from math import floor, ceil, sqrt
 from os import makedirs
 from os.path import isfile, dirname
 from pprint import pprint
@@ -310,7 +310,7 @@ class Character(metaclass=CharacterSingleton):
 
     @property
     def pvp_power(self):
-        return ceil(self.power / (log(self.power) * 1.1))
+        return ceil(sqrt(sqrt(self.power))*100)
 
     @property
     def pvp_life(self):
