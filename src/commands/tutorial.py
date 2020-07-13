@@ -3,8 +3,8 @@ import os
 from discord.ext.commands import Cog, Context, command, BadArgument
 from dotenv import load_dotenv
 
-from src.errors.tutorial import WrongChapter
 from src.commands.utils import in_command_channel
+from src.errors.tutorial import WrongChapter
 
 load_dotenv()
 ADD_BOT = os.getenv('ADD_BOT')

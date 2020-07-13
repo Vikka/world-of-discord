@@ -5,7 +5,7 @@ Created by dturba at 26/06/2020
 from collections import namedtuple
 from random import choice
 
-from src.constants.ITEMS_UTILS import BOW, DAGGER, COMMON, RARE, RARITY, \
+from src.constants.ITEMS_UTILS import DAGGER, COMMON, RARE, RARITY, \
     UNCOMMON, MACE
 
 Item = namedtuple('Item', ['name', 'icon_path'])

@@ -4,15 +4,14 @@ from typing import Optional
 from discord.ext.commands import Cog, Context, command, BadArgument, \
     MissingRequiredArgument, Bot, CommandInvokeError
 
-from src.classes.Character import Character
+from src.classes.Character import Character, get_path_and_characters, \
+    store_characters, get_leader
 from src.commands.utils import no_direct_message, in_command_channel
-from src.constants.CONSTANTS import RANKING, GLOBAL_RANKING, DEFAULT_RANKING, \
-    DEFAULT_VALUE, VALUE
+from src.constants.CONSTANTS import DEFAULT_VALUE, VALUE
+from src.constants.CONSTANTS import RANKING, GLOBAL_RANKING, DEFAULT_RANKING
 from src.constants.REGEX import NAME_PATTERN, NAME_PATTERN_LINK
 from src.errors.character import TwoManyCharacters, UnknownCharacters, \
     NoCharacters, CharacterAlreadyExist
-from src.manipulation.character_manipulation import get_path_and_characters, \
-    store_characters, get_leader
 from src.manipulation.context_manipulation import get_author_guild_from_context
 from src.manipulation.leaderboard.leaderboard import leaderboard_embed
 
@@ -56,7 +55,7 @@ class Personnage(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @command(name='creer', usage='[<Prénom>, <Prénom Nom>]',
+    @command(name='creer', usage='[<Prénom>|<Prénom Nom>]',
              aliases=['créer', 'create', 'new'],
              checks=[no_direct_message, in_command_channel])
     async def create(self, context: Context, *, name: is_name):
@@ -106,7 +105,7 @@ class Personnage(Cog):
             await context.send(
                 "Le personnage que tu souhaites créer existe déjà !")
 
-    @command(name='supprimer', usage='[<Prénom>, <Prénom Nom>]',
+    @command(name='supprimer', usage='[<Prénom>|<Prénom Nom>]',
              aliases=['suppr', 'delete', 'del'],
              checks=[no_direct_message, in_command_channel])
     async def delete(self, context: Context, *, name: is_name):
@@ -221,14 +220,14 @@ class Personnage(Cog):
 
     @command(name='classement', aliases=['leaderboard', 'ranking', 'rank'],
              checks=[no_direct_message, in_command_channel],
-             usage='[membres(default), guildes] [niveaux(default), expérience,'
-                   ' puissance, tués, rares]')
+             usage='[membres(default), guildes] [niveaux(default)|expérience,'
+                   ' puissance, tués, rares, duels]')
     async def leaderboard(self, context: Context,
                           ranking_type: check_ranking_type = DEFAULT_RANKING,
                           value_type: check_value_type = DEFAULT_VALUE):
         print(ranking_type)
         data = self.bot.guilds \
-            if ranking_type == GLOBAL_RANKING\
+            if ranking_type == GLOBAL_RANKING \
             else context.guild
         await context.send(embed=leaderboard_embed(data,
                                                    context.author,

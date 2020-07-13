@@ -2,7 +2,7 @@
 name_per_level.py
 Created by dturba at 26/06/2020
 """
-from random import choice, randint
+from random import randint
 from typing import Optional
 
 RARITY = ('common', 'rare')

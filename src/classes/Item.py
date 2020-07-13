@@ -13,7 +13,7 @@ from src.constants.ITEMS_UTILS import RARITY_PROB, COMMON, UNCOMMON, RARE, \
     WEAPON, WEAPON_TYPES
 from src.constants.PATH import IMG_LINKS_PATH, ITEM_NAME_PATH, \
     RARE_ITEM_NAME_PATH
-from src.utils import first
+from src.utils.utils import first
 
 setlocale(LC_ALL, '')
 

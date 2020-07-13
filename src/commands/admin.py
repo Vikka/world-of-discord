@@ -5,11 +5,11 @@ from discord import Guild, PermissionOverwrite
 from discord.ext.commands import Cog, command, Context, Bot
 from discord.utils import get
 
+from src.commands.utils import is_admin, is_owner
 from src.constants.CONSTANTS import DEFAULT_VALUE
+from src.errors.guild import ChannelAlreadyExist
 from src.manipulation.leaderboard.leaderboard import member_max_value
 from src.manipulation.reset_lock import clean_lock
-from src.commands.utils import is_admin, is_owner
-from src.errors.guild import ChannelAlreadyExist
 
 
 class Admin(Cog):

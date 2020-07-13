@@ -1,22 +1,31 @@
 from functools import lru_cache
-from math import floor
+from json import dumps, load
+from math import floor, log, ceil
+from os import makedirs
+from os.path import isfile, dirname
 from pprint import pprint
 from time import time
-from typing import Optional, List
+from typing import List, Dict, Tuple
+from typing import Optional
 from weakref import ref
 
-from discord import Embed, TextChannel
+from discord import Embed, Member, Guild, TextChannel
 
-from src.constants.CONSTANTS import LEVEL_VALUE, EXP_VALUE, POWER_VALUE, \
-    KILLS_VALUE, RARES_VALUE
 from src.classes.Item import _get_base, Item
 from src.constants import ITEMS_UTILS
 from src.constants import JSON_KEY
+from src.constants.CONSTANTS import LEVEL_VALUE, EXP_VALUE, POWER_VALUE, \
+    KILLS_VALUE, RARES_VALUE, DUEL_VALUE
 from src.constants.FIGHT import ROUND_TIME
-from src.constants.ITEMS_UTILS import COMMON, UNCOMMON, RARE
-from src.constants.JSON_KEY import TOTAL_EXP, WEAPONS, ID, NAME, POWER, \
-    LEVEL, LOCK, EXP, CURRENT, KILLS, LOOTS, COMMONS, UNCOMMONS, RARES
-from src.utils import clear_instances, first
+from src.constants.ITEMS_UTILS import COMMON
+from src.constants.ITEMS_UTILS import UNCOMMON, RARE
+from src.constants.JSON_KEY import KILLS, LOOTS, COMMONS, UNCOMMONS, RARES, \
+    PVP1V1_TOTAL_GAMES, ELO, PVP1V1_TOTAL_WIN, PVP1V1_TOTAL_LOSE
+from src.constants.JSON_KEY import TOTAL_EXP, WEAPONS, ID, NAME, POWER, LEVEL, \
+    LOCK, EXP, CURRENT
+from src.constants.PATH import USER_PATH
+from src.errors.character import NoCharacters
+from src.utils.utils import clear_instances, first
 
 
 @lru_cache(maxsize=None)
@@ -76,6 +85,8 @@ class Character(metaclass=CharacterSingleton):
     _commons: int
     _uncommons: int
     _rares: int
+    _elo: int
+    pvp1v1_total_games: int
 
     @classmethod
     def from_json(cls, json: dict):
@@ -106,29 +117,40 @@ class Character(metaclass=CharacterSingleton):
         commons = json.get(COMMONS, 0)
         uncommons = json.get(UNCOMMONS, 0)
         rares = json.get(RARES, 0)
-        return cls(json[ID], json[NAME], json[POWER],
-                   json[LEVEL], json[EXP], json[CURRENT], lock,
-                   total_exp, weapon, helmet, legs, boots, chest,
-                   gloves, belt, cloak, shoulders, wrist, kills,
-                   loots, commons, uncommons, rares,
-                   )
+        elo = json.get(ELO, 0)
+        pvp1v1_total_games = json.get(PVP1V1_TOTAL_GAMES, 0)
+        pvp1v1_total_lose = json.get(PVP1V1_TOTAL_LOSE, 0)
+        pvp1v1_total_win = json.get(PVP1V1_TOTAL_WIN, 0)
 
-    def __init__(self, id_: str, name: str, power: Optional[int] = None,
-                 level: int = 1, exp: int = 0, is_leader: bool = True,
-                 lock: int = 0, total_exp: int = 0,
-                 weapon: Optional[Item] = None,
-                 helmet: Optional[Item] = None,
-                 legs: Optional[Item] = None,
-                 boots: Optional[Item] = None,
-                 chest: Optional[Item] = None,
-                 gloves: Optional[Item] = None,
-                 belt: Optional[Item] = None,
-                 cloak: Optional[Item] = None,
-                 shoulders: Optional[Item] = None,
-                 wrist: Optional[Item] = None,
-                 kills: int = 0, loots: int = 0, commons: int = 0,
-                 uncommons: int = 0, rares: int = 0,
-                 ):
+        return cls(
+            json[ID], json[NAME], json[POWER],
+            json[LEVEL], json[EXP], json[CURRENT], lock, total_exp, weapon,
+            helmet, legs, boots, chest, gloves, belt, cloak, shoulders, wrist,
+            kills, loots, commons, uncommons, rares, elo, pvp1v1_total_games,
+            pvp1v1_total_lose, pvp1v1_total_win,
+        )
+
+    def __init__(
+            self, id_: str, name: str, power: Optional[int] = None,
+            level: int = 1, exp: int = 0, is_leader: bool = True,
+            lock: int = 0, total_exp: int = 0,
+            weapon: Optional[Item] = None,
+            helmet: Optional[Item] = None,
+            legs: Optional[Item] = None,
+            boots: Optional[Item] = None,
+            chest: Optional[Item] = None,
+            gloves: Optional[Item] = None,
+            belt: Optional[Item] = None,
+            cloak: Optional[Item] = None,
+            shoulders: Optional[Item] = None,
+            wrist: Optional[Item] = None,
+            kills: int = 0, loots: int = 0, commons: int = 0,
+            uncommons: int = 0, rares: int = 0,
+            elo: int = 0,
+            pvp1v1_total_games: int = 0,
+            pvp1v1_total_lose: int = 0,
+            pvp1v1_total_win: int = 0,
+    ):
         """Create a Item instance."""
         self.id = id_
         self._name = name
@@ -136,6 +158,7 @@ class Character(metaclass=CharacterSingleton):
         self._level = level
         self._exp = exp
         self._total_exp = total_exp
+        self.total_exp = total_exp
         self.is_leader = is_leader
         self._weapon = weapon
         self.helmet = helmet
@@ -153,6 +176,10 @@ class Character(metaclass=CharacterSingleton):
         self._commons = commons
         self._uncommons = uncommons
         self._rares = rares
+        self._elo = elo
+        self.pvp1v1_total_games = pvp1v1_total_games
+        self.pvp1v1_total_lose = pvp1v1_total_lose
+        self.pvp1v1_total_win = pvp1v1_total_win
 
     def __repr__(self):
         """Create a string representation of the Character."""
@@ -281,6 +308,31 @@ class Character(metaclass=CharacterSingleton):
     def incr_rares(self):
         self._rares += 1
 
+    @property
+    def pvp_power(self):
+        return ceil(self.power / (log(self.power) * 1.1))
+
+    @property
+    def pvp_life(self):
+        return self.pvp_power * 3
+
+    @property
+    def elo(self):
+        return self._elo
+
+    @elo.setter
+    def elo(self, value):
+        self._elo = value
+
+    def incr_pvp1v1_total_games(self):
+        self.pvp1v1_total_games += 1
+
+    def incr_pvp1v1_total_lose(self):
+        self.pvp1v1_total_lose += 1
+
+    def incr_pvp1v1_total_win(self):
+        self.pvp1v1_total_win += 1
+
     def get_value(self, key):
         switch = {
             LEVEL_VALUE: self.level,
@@ -288,6 +340,7 @@ class Character(metaclass=CharacterSingleton):
             POWER_VALUE: self.power,
             KILLS_VALUE: self.kills,
             RARES_VALUE: self.rares,
+            DUEL_VALUE: self.elo,
         }
         key = first(switch, lambda iterable: key in iterable)
         return switch.get(key, 0)
@@ -298,6 +351,9 @@ class Character(metaclass=CharacterSingleton):
             COMMON: self.incr_commons,
             UNCOMMON: self.incr_uncommons,
             RARE: self.incr_rares,
+            PVP1V1_TOTAL_GAMES: self.incr_pvp1v1_total_games,
+            PVP1V1_TOTAL_LOSE: self.incr_pvp1v1_total_lose,
+            PVP1V1_TOTAL_WIN: self.incr_pvp1v1_total_win,
         }
         switch.get(first(switch, lambda x: key in x))()
 
@@ -330,6 +386,10 @@ class Character(metaclass=CharacterSingleton):
             'commons': self._commons,
             'uncommons': self._uncommons,
             'rares': self._rares,
+            'elo': self.elo,
+            'pvp1v1_total_games': self.pvp1v1_total_games,
+            'pvp1v1_total_lose': self.pvp1v1_total_lose,
+            'pvp1v1_total_win': self.pvp1v1_total_win,
         }
         return json
 
@@ -458,6 +518,55 @@ def get_loot(fighter: Character, channel: TextChannel):
             or not channel:
         return
     return f'{fighter._name} vient de récupérer cet objet :', new_item.embed
+
+
+def _get_character(path: str) -> Dict[str, Character]:
+    content = {}
+    if isfile(path):
+        with open(path) as new_file:
+            content = load(new_file)
+    if not content:
+        return {}
+    return {id_: Character.from_json(character) for id_, character in
+            content.items()}
+
+
+def get_leader(characters: Dict[str, Character]) -> Optional[Character]:
+    if not characters:
+        raise NoCharacters
+
+    for name, character in characters.items():
+        if character.is_leader:
+            return character
+
+
+def get_path_and_characters(author: Member, guild: Guild) \
+        -> Tuple[str, Dict[str, Character]]:
+    file_name = f'{author.id}-{guild.id}.json'
+    path = USER_PATH.format(guild.id, file_name)
+    characters = _get_character(path)
+    return path, characters
+
+
+def store_characters(path: str, characters_list: Dict[str, Character]):
+    makedirs(dirname(path), exist_ok=True)
+    if isfile(path):
+        with open(path, 'w') as new_file:
+            new_file.write(
+                dumps({id_: character.to_json() for id_, character in
+                       characters_list.items()})
+            )
+    else:
+        with open(path, 'x') as new_file:
+            new_file.write(
+                dumps({id_: character.to_json() for id_, character in
+                       characters_list.items()})
+            )
+
+
+def leader_from_author_guild(author, guild):
+    _, characters = get_path_and_characters(author, guild)
+    return get_leader(characters)
 
 
 if __name__ == '__main__':
