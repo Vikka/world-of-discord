@@ -6,12 +6,11 @@ from typing import Tuple, Dict
 from discord import Member, Guild, Message, TextChannel
 from discord.utils import get
 
-from src.classes.Character import Character, get_enemy_life, get_loot
+from src.classes.Character import Character, get_enemy_life, get_loot, \
+    get_path_and_characters, get_leader, store_characters
 from src.constants.CHANNELS import CHANNEL_INFO_WOD
 from src.constants.FIGHT import ATTACK_SPEED
 from src.errors.character import NoLeader, CharactersLocked
-from src.manipulation.character_manipulation import get_leader, \
-    store_characters, get_path_and_characters
 
 
 def _init_fight_data(message: Message) -> Tuple[Member, Guild, TextChannel]:

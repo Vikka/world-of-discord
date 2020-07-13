@@ -36,7 +36,7 @@ def compute_initial_elo(results: list, victories: int,
     return round(mean(results) + bonus)
 
 
-def _get_coef(total_games: int, elo: int) -> Literal[40, 30, 10]:
+def _get_coef(total_games: int, elo: int) -> Literal[10, 30, 40]:
     if total_games < 30:
         return 40
     if elo < 2400:
@@ -53,15 +53,17 @@ def compute_new_elo(total_games: int, elo: int, opponent_elo: int, win: float):
 
 
 if __name__ == '__main__':
-    results_ = [
-        1500,
-        1500,
-        1700,
-        1700,
-        1600,
-    ]
-    victories_ = 5
-    initial_elo = compute_initial_elo(results_, victories_, table=False)
-    print(initial_elo)
-    new_elo_ = compute_new_elo(30, initial_elo, 1150, 1)
+    # results_ = [
+    #     1500,
+    #     1500,
+    #     1700,
+    #     1700,
+    #     1600,
+    # ]
+    # victories_ = 5
+    # initial_elo = compute_initial_elo(results_, victories_, table=False)
+    # print(initial_elo)
+    # new_elo_ = compute_new_elo(30, initial_elo, 1150, 1)
+    # print(new_elo_)
+    new_elo_ = compute_new_elo(1, 0, 0, 1)
     print(new_elo_)

@@ -21,3 +21,8 @@ LOOTS = 'loots'
 COMMONS = 'commons'
 UNCOMMONS = 'uncommons'
 RARES = 'rares'
+ELO = 'elo'
+PVP1V1_TOTAL_GAMES = 'pvp1v1_total_games'
+PVP1V1_TOTAL_LOSE = 'pvp1v1_total_lose'
+PVP1V1_TOTAL_WIN = 'pvp1v1_total_win'
+

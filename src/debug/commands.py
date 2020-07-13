@@ -1,14 +1,13 @@
 import re
-from random import randint
 from os import listdir
 from os.path import isfile, join
+from random import randint
 
-from discord import TextChannel, Message, File
+from discord import TextChannel, File
 from discord.ext import commands
 from discord.ext.commands import Cog, Context
 
 from src.classes.Item import Item
-from src.constants.PATH import ITEM_NAME_PATH
 
 loot = re.compile(r'!item')
 item_name = re.compile(r'([a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂ'

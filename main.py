@@ -1,18 +1,24 @@
 # bot.py
 import os
+import re
 from asyncio import sleep
+from pathlib import Path
+from typing import Dict
 
-from discord import Message, DMChannel, Game
+from discord import Message, DMChannel, Game, Reaction, User
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
 
 # this specifies what extensions to load when the bot starts up
-from src.classes.Character import Character
+from src.classes.Character import Character, store_characters
+from src.classes.PVP1V1 import PVP1V1
 from src.classic_fight import start_classic_fight
-from src.utils import clear_instances
+from src.elo.elo import compute_new_elo
+from src.utils.utils import clear_instances
 
 startup_extensions = ['src.commands.tutorial', 'src.commands.character',
-                      'src.commands.admin', 'src.commands.informations']
+                      'src.commands.admin', 'src.commands.informations',
+                      'src.commands.pvp']
 
 load_dotenv()
 
@@ -21,6 +27,7 @@ if os.getenv('DEBUG') == 'True':
 
 COMMAND_PREFIX = os.getenv('COMMAND_PREFIX')
 
+REG = re.compile(r'([0-9]+)-([0-9]+)-.+')
 
 class CustomBot(Bot):
     maintenance: bool
@@ -31,7 +38,8 @@ class CustomBot(Bot):
         self.command_runing = list()
 
 
-bot: CustomBot = CustomBot(command_prefix=COMMAND_PREFIX, case_insensitive=True)
+bot: CustomBot = CustomBot(command_prefix=COMMAND_PREFIX,
+                           case_insensitive=True)
 
 
 @bot.event
@@ -55,7 +63,7 @@ async def stop_trigger(message):
     :return:
     """
     return (message.content.startswith(COMMAND_PREFIX)
-            or message.author == bot.user
+            or message.author.bot
             or isinstance(message.channel, DMChannel))
 
 
@@ -67,6 +75,39 @@ async def on_message(message: Message):
         return
 
     await start_classic_fight(message)
+
+
+@bot.event
+async def on_reaction_add(reaction: Reaction, user: User):
+    if user.bot:
+        return
+
+    message_id = reaction.message.id
+    fight_list: Dict[int, PVP1V1] = bot.get_cog('PVP').fight_list
+
+    if fight := fight_list.pop(message_id, None):
+        end = await fight.react(reaction, fight_list)
+        if end:
+            dead = end[0]
+            victorious = end[1]
+            d_elo = dead.elo
+            v_elo = victorious.elo
+            dead.elo = compute_new_elo(dead.pvp1v1_total_games,
+                                       d_elo, v_elo, 0)
+            victorious.elo = compute_new_elo(victorious.pvp1v1_total_games,
+                                             v_elo, d_elo, 1)
+            res = REG.match(dead.id).groups()
+            for path in Path('./data/users').rglob(f'{res[1]}-{res[0]}.json'):
+                store_characters(str(path), {dead.id: dead})
+                print(path)
+
+            res = REG.match(victorious.id).groups()
+            for path in Path('./data/users').rglob(f'{res[1]}-{res[0]}.json'):
+                store_characters(str(path), {victorious.id: victorious})
+                print(path)
+            await fight.origin_channel.send(f'{victorious._name} vient de '
+                                            f'battre {dead._name} !')
+        return
 
 
 if __name__ == '__main__':

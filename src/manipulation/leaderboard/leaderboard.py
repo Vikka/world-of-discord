@@ -3,11 +3,11 @@ from typing import List, Tuple, Optional, Union
 
 from discord import Embed, Guild, Member
 
+from src.classes.Character import get_path_and_characters
 from src.constants.CONSTANTS import VALUE_ARRAY, DEFAULT_RANKING, \
     GLOBAL_RANKING
 from src.errors.character import NoRecordedPlayers
-from src.manipulation.character_manipulation import get_path_and_characters
-from src.utils import first
+from src.utils.utils import first
 
 Leaderboard = namedtuple('Leaderboard', ['id', 'name', 'value'])
 
