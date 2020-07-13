@@ -27,6 +27,24 @@ class PVP(Cog):
     @command(name='duel', checks=[no_direct_message, in_command_channel],
              hidden=True)
     async def pvp_1v1(self, context: Context):
+        """
+        Permet d'entrer en lice pour un duel.
+
+        Lorsque vous entrez en duel avec quelqu'un, vous pouvez à nouveau vous
+        inscrire avec un de vos personnages, le même si vous le souhaitez.
+        Pour cela, il suffit de refaire la commande sur le serveur en question.
+        Pour le moment, cependant, ce n'est pas conseillé, car vous risquez de
+        vous perdre entre les combats si vous ne faites pas attention ou si
+        vous en avez trop.
+
+        ! Cette fonctionnalité est en développement, il y a des bugs, veuillez
+        les remonter si ils n'apparaissent pas dans la liste ci-dessous :
+            - Lorsque l'ennemi est étourdit, il est possible que le bot ne
+            prenne pas votre action en compte. Vous ne verrez donc pas de
+            message indiquant qu'il y a eu un affrontement. Vous n'avez qu'a
+            appuyer à nouveau sur l'action qui n'a pas été prise en compte pour
+            que ça fonctionne.
+        """
         if not self.waiting_list:
             author = context.author
             leader = leader_from_author_guild(author, context.guild)
