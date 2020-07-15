@@ -10,9 +10,12 @@ class Informations(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @command(name='road_map', aliases=['planning'],
+    @command(name='road_map', aliases=['planning', 'road'],
              checks=[no_direct_message, in_command_channel])
     async def road_map(self, context: Context):
+        """
+        Affiche un lien vers la fiche de route du projet.
+        """
         await context.channel.send(GITHUB_PROJECT)
 
 

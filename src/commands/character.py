@@ -68,6 +68,10 @@ class Personnage(Cog):
 
         Attention, la taille du nom et du prénom doit être comprise entre
         2 et 15 caractères.
+
+        Exemples (penses à ajouter le préfixe de commande !):
+            créer Leroy
+            create Leroy Jenkins
         """
         author, guild, path, characters = _init_data(context)
 
@@ -187,6 +191,11 @@ class Personnage(Cog):
 
         Te permet d'afficher la fiche d'un personnage lié au serveur sur lequel
         tu effectues cette commande.
+
+        Exemples (penses à ajouter le préfixe de commande !):
+            fiche
+            profil Leroy
+            personnage Leroy Jenkins
         """
         author, guild, _, characters = _init_data(context)
 
