@@ -10,12 +10,12 @@ RANKING_ARRAY = [
 RANKING = MEMBERS_RANKING + GUILDS_RANKING
 
 DEFAULT_VALUE = 'niveaux'
-LEVEL_VALUE = (DEFAULT_VALUE, 'level', 'niv', 'lvl')
-EXP_VALUE = ('expérience', 'experience', 'exp', 'xp')
-POWER_VALUE = ('puissance', 'power', 'pow')
-KILLS_VALUE = ('tués', 'kills')
-RARES_VALUE = ('rares',)
-DUEL_VALUE = ('duels', 'duel', 'dudu')
+LEVEL_VALUE = (DEFAULT_VALUE, 'level', 'niv', 'lvl', 'n', 'l')
+EXP_VALUE = ('expérience', 'experience', 'exp', 'xp', 'x')
+POWER_VALUE = ('puissance', 'power', 'pow', 'p')
+KILLS_VALUE = ('tués', 'kills', 't', 'k')
+RARES_VALUE = ('rares', 'rare', 'r')
+DUEL_VALUE = ('duels', 'duel', 'dudu', 'd')
 VALUE_ARRAY = [
     LEVEL_VALUE,
     EXP_VALUE,
