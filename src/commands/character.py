@@ -248,10 +248,6 @@ class Personnage(Cog):
         else:
             raise error
 
-    @command(name='rmx', hidden=True,
-             checks=[no_direct_message, in_command_channel])
-    async def rank_members_xp(self, context: Context):
-        await self.leaderboard(context, value_type=EXP_VALUE[0])
-
+        
 def setup(bot):
     bot.add_cog(Personnage(bot))

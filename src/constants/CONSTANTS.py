@@ -11,7 +11,7 @@ RANKING = MEMBERS_RANKING + GUILDS_RANKING
 
 DEFAULT_VALUE = 'niveaux'
 LEVEL_VALUE = (DEFAULT_VALUE, 'level', 'niv', 'lvl', 'n', 'l')
-EXP_VALUE = ('expérience', 'experience', 'exp', 'xp', 'x')
+EXP_VALUE = ('expérience', 'experience', 'exp', 'xp', 'e', 'x')
 POWER_VALUE = ('puissance', 'power', 'pow', 'p')
 KILLS_VALUE = ('tués', 'kills', 't', 'k')
 RARES_VALUE = ('rares', 'rare', 'r')
