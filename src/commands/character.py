@@ -229,6 +229,20 @@ class Personnage(Cog):
                           value_type: check_value_type = DEFAULT_VALUE):
         """
         Affiche le classement des joueurs ou des guildes.
+
+        Par défaut, le classement est celui des joueurs, mais tu peux préciser
+        le type avec le premier argument. Voici les possibilités :
+            - 'membres', 'membre', 'members', 'member', 'm',
+            - 'guildes', 'guilde', 'guilds', 'guid', 'g'.
+
+        Par défaut, la valeur utilisée pour classer est le niveau, mais tu peux
+        préciser cette valeur avec le second argument. Voici les possibilités :
+            - 'niveaux', 'level', 'niv', 'lvl', 'n', 'l',
+            - 'expérience', 'experience', 'exp', 'xp', 'e', 'x',
+            - 'puissance', 'power', 'pow', 'p',
+            - 'tués', 'kills', 't', 'k',
+            - 'rares', 'rare', 'r',
+            - 'duels', 'duel', 'dudu', 'd'.
         """
         print(ranking_type)
         data = self.bot.guilds \
