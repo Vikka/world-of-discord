@@ -20,6 +20,7 @@ bonus_table = {
     .00: -800,
 }
 
+MAX_DIFF = 400
 
 def compute_bonus(ratio: float, min_: int = -800, max_: int = 800) -> int:
     if ratio == 0:
@@ -46,8 +47,8 @@ def _get_coef(total_games: int, elo: int) -> Literal[10, 30, 40]:
 
 def compute_new_elo(total_games: int, elo: int, opponent_elo: int, win: float):
     coef = _get_coef(total_games, elo)
-    elo_diff = tmp if (tmp := elo - opponent_elo) < 400 else 400
-    score_probability = 1 / (1 + pow(10, -elo_diff / 400))
+    elo_diff = tmp if (tmp := elo - opponent_elo) < MAX_DIFF else MAX_DIFF
+    score_probability = 1 / (1 + pow(10, -elo_diff / MAX_DIFF))
     new_elo = round(elo + coef * (win - score_probability))
     return new_elo if new_elo >= 0 else 0
 
@@ -65,5 +66,5 @@ if __name__ == '__main__':
     # print(initial_elo)
     # new_elo_ = compute_new_elo(30, initial_elo, 1150, 1)
     # print(new_elo_)
-    new_elo_ = compute_new_elo(1, 0, 0, 0)
+    new_elo_ = compute_new_elo(50, 5000, 4990, 0)
     print(new_elo_)

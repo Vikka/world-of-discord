@@ -244,12 +244,12 @@ class Personnage(Cog):
             - 'rares', 'rare', 'r',
             - 'duels', 'duel', 'dudu', 'd'.
 
-        Exemples :
-            !classement
-            !classement guildes duels
-            !ranking members exp
-            !c g niv
-            !r m p
+        Exemples (penses à ajouter le préfixe de commande !):
+            classement
+            classement guildes duels
+            ranking members exp
+            c g niv
+            r m p
         """
         print(ranking_type)
         data = self.bot.guilds \
