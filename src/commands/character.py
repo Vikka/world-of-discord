@@ -7,7 +7,8 @@ from discord.ext.commands import Cog, Context, command, BadArgument, \
 from src.classes.Character import Character, get_path_and_characters, \
     store_characters, get_leader
 from src.commands.utils import no_direct_message, in_command_channel
-from src.constants.CONSTANTS import DEFAULT_VALUE, VALUE, GUILDS_RANKING
+from src.constants.CONSTANTS import DEFAULT_VALUE, VALUE, GUILDS_RANKING, \
+    EXP_VALUE
 from src.constants.CONSTANTS import RANKING, DEFAULT_RANKING
 from src.constants.REGEX import NAME_PATTERN, NAME_PATTERN_LINK
 from src.errors.character import TwoManyCharacters, UnknownCharacters, \
@@ -218,13 +219,17 @@ class Personnage(Cog):
                 f"{help_quote}"
             )
 
-    @command(name='classement', aliases=['leaderboard', 'ranking', 'rank'],
+    @command(name='classement',
+             aliases=['leaderboard', 'ranking', 'rank', 'c', 'r'],
              checks=[no_direct_message, in_command_channel],
-             usage='[membres(default), guildes] [niveaux(default)|expérience,'
-                   ' puissance, tués, rares, duels]')
+             usage='[membres(par défaut)|guildes] [niveaux(par défaut)|'
+                   'expérience|puissance|tués|rares|duels]')
     async def leaderboard(self, context: Context,
                           ranking_type: check_ranking_type = DEFAULT_RANKING,
                           value_type: check_value_type = DEFAULT_VALUE):
+        """
+        Affiche le classement des joueurs ou des guildes.
+        """
         print(ranking_type)
         data = self.bot.guilds \
             if ranking_type in GUILDS_RANKING \
@@ -243,6 +248,10 @@ class Personnage(Cog):
         else:
             raise error
 
+    @command(name='rmx', hidden=True,
+             checks=[no_direct_message, in_command_channel])
+    async def rank_members_xp(self, context: Context):
+        await self.leaderboard(context, value_type=EXP_VALUE[0])
 
 def setup(bot):
     bot.add_cog(Personnage(bot))
