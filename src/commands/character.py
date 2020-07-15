@@ -262,6 +262,6 @@ class Personnage(Cog):
         else:
             raise error
 
-        
+
 def setup(bot):
     bot.add_cog(Personnage(bot))

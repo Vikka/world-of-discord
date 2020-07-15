@@ -2,7 +2,7 @@ STAT_BASE = 9
 
 DEFAULT_RANKING = 'membres'
 MEMBERS_RANKING = (DEFAULT_RANKING, 'membre', 'members', 'member', 'm')
-GUILDS_RANKING = ('guildes', 'guilde', 'guilds', 'guid', 'g')
+GUILDS_RANKING = ('guildes', 'guilde', 'guilds', 'guild', 'g')
 RANKING_ARRAY = [
     MEMBERS_RANKING,
     GUILDS_RANKING
