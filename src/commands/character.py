@@ -243,6 +243,13 @@ class Personnage(Cog):
             - 'tués', 'kills', 't', 'k',
             - 'rares', 'rare', 'r',
             - 'duels', 'duel', 'dudu', 'd'.
+
+        Exemples :
+            !classement
+            !classement guildes duels
+            !ranking members exp
+            !c g niv
+            !r m p
         """
         print(ranking_type)
         data = self.bot.guilds \
