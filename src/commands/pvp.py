@@ -9,14 +9,14 @@ from src.classes.Character import leader_from_author_guild
 from src.classes.PVP1V1 import PVP1V1
 from src.commands.utils import no_direct_message, in_command_channel
 from src.constants.EMOJIS import EMOJI_ATTACK, EMOJI_DEFENSE, EMOJI_FEINT
-from src.constants.PVP import REGISTERED, INIT
+from src.constants.PVP import REGISTERED, INIT, DM_REGISTERED
 from src.duel import register, check_list
 from src.errors.pvp import OnlyOneCharacter
 
 
 class PVP(Cog):
     bot: Bot
-    waiting_list: Dict[int, str]
+    waiting_list: Dict[int, Challenger]
     fight_list: Dict[int, PVP1V1]
 
     def __init__(self, bot):
@@ -49,7 +49,7 @@ class PVP(Cog):
             author = context.author
             leader = leader_from_author_guild(author, context.guild)
 
-            await author.send(REGISTERED.format(leader._name))
+            await author.send(DM_REGISTERED.format(leader._name))
 
             self.waiting_list = register(self.waiting_list, author, leader)
             await context.send(REGISTERED.format(leader._name))
@@ -58,7 +58,7 @@ class PVP(Cog):
                                         context.author,
                                         context.guild)
         await context.send(f'Duel lancé entre {player_1.character._name} et '
-                           f'{player_2.character._name} !   ')
+                           f'{player_2.character._name} !')
 
         switch = {
             -1: player_1,
@@ -78,7 +78,7 @@ class PVP(Cog):
     @pvp_1v1.error
     async def pvp_1v1_error(self, context: Context, error):
         if isinstance(error, OnlyOneCharacter):
-            await context.send(f'Tu est déjà en lice avec {error}')
+            await context.send(f'Tu es déjà en lice avec {error}')
         if isinstance(error, CommandInvokeError):
             await context.send(f"Tu ne peux pas participer aux duels car tu "
                                f"n'acceptes pas les mp de la part des membres "
