@@ -94,7 +94,7 @@ def create_embed(members: List[Leaderboard], author: Member,
     exp_max = '\n'.join(values)
     key = first(VALUE_ARRAY, lambda iterable: key in iterable)[0].capitalize()
 
-    embed = Embed(title=f'Classement des {ranking_type}')
+    embed = Embed(title=f'Classement {ranking_type}')
     embed.add_field(name='n°', value=numbers)
     embed.add_field(name='Nom', value=names)
     embed.add_field(name=key, value=exp_max)
