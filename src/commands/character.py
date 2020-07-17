@@ -7,8 +7,7 @@ from discord.ext.commands import Cog, Context, command, BadArgument, \
 from src.classes.Character import Character, get_path_and_characters, \
     store_characters, get_leader
 from src.commands.utils import no_direct_message, in_command_channel
-from src.constants.CONSTANTS import DEFAULT_VALUE, VALUE, GUILDS_RANKING, \
-    EXP_VALUE
+from src.constants.CONSTANTS import DEFAULT_VALUE, VALUE, MEMBERS_RANKING
 from src.constants.CONSTANTS import RANKING, DEFAULT_RANKING
 from src.constants.REGEX import NAME_PATTERN, NAME_PATTERN_LINK
 from src.errors.character import TwoManyCharacters, UnknownCharacters, \
@@ -182,7 +181,8 @@ class Personnage(Cog):
                 "N'hésite pas à taper la commande \"!help "
                 "[lister|liste|list|personnages]\" pour avoir de l'aide.")
 
-    @command(name='fiche', aliases=['profil', 'sheet', 'personnage', 'perso', 'f', 'p', 's'],
+    @command(name='fiche',
+             aliases=['profil', 'sheet', 'personnage', 'perso', 'f', 'p', 's'],
              checks=[no_direct_message, in_command_channel])
     async def character_sheet(self, context: Context, *,
                               name: Optional[is_name] = None):
@@ -231,7 +231,7 @@ class Personnage(Cog):
     @command(name='classement',
              aliases=['leaderboard', 'ranking', 'rank', 'c', 'r'],
              checks=[no_direct_message, in_command_channel],
-             usage='[membres(par défaut)|guildes] [niveaux(par défaut)|'
+             usage='[membres(par défaut)|guildes|monde] [niveaux(par défaut)|'
                    'expérience|puissance|tués|rares|duels]')
     async def leaderboard(self, context: Context,
                           ranking_type: check_ranking_type = DEFAULT_RANKING,
@@ -242,7 +242,8 @@ class Personnage(Cog):
         Par défaut, le classement est celui des joueurs, mais tu peux préciser
         le type avec le premier argument. Voici les possibilités :
             - 'membres', 'membre', 'members', 'member', 'm',
-            - 'guildes', 'guilde', 'guilds', 'guild', 'g'.
+            - 'guildes', 'guilde', 'guilds', 'guild', 'g',
+            - 'monde', 'world', 'global', 'w'.
 
         Par défaut, la valeur utilisée pour classer est le niveau, mais tu peux
         préciser cette valeur avec le second argument. Voici les possibilités :
@@ -255,15 +256,16 @@ class Personnage(Cog):
 
         Exemples (penses à ajouter le préfixe de commande !):
             classement
+            rank world
             classement guildes duels
-            ranking members exp
-            c g niv
+            ranking monde exp
+            c w niv
             r m p
         """
         print(ranking_type)
-        data = self.bot.guilds \
-            if ranking_type in GUILDS_RANKING \
-            else context.guild
+        data = context.guild \
+            if ranking_type in MEMBERS_RANKING \
+            else self.bot.guilds
         await context.send(embed=leaderboard_embed(data,
                                                    context.author,
                                                    ranking_type,
