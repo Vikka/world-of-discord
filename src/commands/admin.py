@@ -1,11 +1,12 @@
 from asyncio import sleep
 from random import choice
 
-from discord import Guild, PermissionOverwrite
+from discord import Guild, PermissionOverwrite, TextChannel
 from discord.ext.commands import Cog, command, Context, Bot
 from discord.utils import get
 
 from src.commands.utils import is_admin, is_owner
+from src.constants.CHANNELS import CHANNEL_INFO_WOD
 from src.constants.CONSTANTS import DEFAULT_VALUE
 from src.errors.guild import ChannelAlreadyExist
 from src.manipulation.leaderboard.leaderboard import member_max_value
@@ -65,6 +66,14 @@ class Admin(Cog):
         await sleep(1)
         await context.send(f'{winner} remporte donc {msg}!!!!')
 
+    @command(name='event', checks=[is_admin])
+    async def create_event(self, _: Context, *, text: str):
+        """
+        Permet d'envoyer un message à tout les serveurs.
+        """
+        for guild in self.bot.guilds:
+            event_chan: TextChannel = get(guild.channels, name=CHANNEL_INFO_WOD)
+            await event_chan.send(text)
 
 def setup(bot):
     bot.add_cog(Admin(bot))
