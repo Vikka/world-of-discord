@@ -1,7 +1,7 @@
 ---
-name: Feature request
+name: EN - Feature request
 about: Suggest an idea for this project
-title: "[request]"
+title: "[REQUEST]"
 labels: enhancement
 assignees: Vikka
 
