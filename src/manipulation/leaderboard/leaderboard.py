@@ -5,7 +5,7 @@ from discord import Embed, Guild, Member
 
 from src.classes.Character import get_path_and_characters
 from src.constants.CONSTANTS import VALUE_ARRAY, GUILDS_RANKING, \
-    MEMBERS_RANKING, RANKING_ARRAY
+    MEMBERS_RANKING, RANKING_ARRAY, WORLD_RANKING
 from src.errors.character import NoRecordedPlayers
 from src.utils.utils import first
 
@@ -51,6 +51,20 @@ def get_guilds(guilds: List[Guild], key: str) -> List[Leaderboard]:
     return sorted((Leaderboard(guild.id, guild.name, max_xp)
                    for guild in guilds
                    if (max_xp := guild_max_value(guild, key))),
+                  key=lambda x: x.value,
+                  reverse=True)
+
+
+def get_world_members(guilds: List[Guild], key: str) -> List[Leaderboard]:
+    members = list()
+    for guild in guilds:
+        try:
+            members.extend(get_members(guild, key))
+        except NoRecordedPlayers:
+            pass
+    if not members:
+        raise NoRecordedPlayers
+    return sorted(members,
                   key=lambda x: x.value,
                   reverse=True)
 
@@ -106,6 +120,7 @@ def create_embed(members: List[Leaderboard], author: Member,
 switch = {
     MEMBERS_RANKING: get_members,
     GUILDS_RANKING: get_guilds,
+    WORLD_RANKING: get_world_members,
 }
 
 
