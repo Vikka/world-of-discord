@@ -99,7 +99,7 @@ def create_embed(members: List[Leaderboard], author: Member,
         RANKING_ARRAY,
         lambda iterable: ranking_type in iterable
     )[0]
-    id_: int = author.id if ranking_type in MEMBERS_RANKING else author.guild.id
+    id_: int = author.guild.id if ranking_type in GUILDS_RANKING else author.id
     numbers, names, values = get_ranking(members, id_)
     author_pos, author_value, has_char = get_author(members, id_)
     numbers = '\n'.join(numbers)
