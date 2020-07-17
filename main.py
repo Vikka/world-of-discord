@@ -1,7 +1,6 @@
-# bot.py
 import os
 import re
-from asyncio import sleep
+from asyncio import sleep, gather
 from pathlib import Path
 from typing import Dict
 
@@ -9,12 +8,12 @@ from discord import Message, DMChannel, Game, Reaction, User
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
 
-# this specifies what extensions to load when the bot starts up
 from src.classes.Character import Character, store_characters
 from src.classes.PVP1V1 import PVP1V1
 from src.classic_fight import start_classic_fight
 from src.elo.elo import compute_new_elo
 from src.utils.utils import clear_instances
+from src.coroutines.activity import activity
 
 startup_extensions = ['src.commands.tutorial', 'src.commands.character',
                       'src.commands.admin', 'src.commands.informations',
@@ -28,6 +27,7 @@ if os.getenv('DEBUG') == 'True':
 COMMAND_PREFIX = os.getenv('COMMAND_PREFIX')
 
 REG = re.compile(r'([0-9]+)-([0-9]+)-.+')
+
 
 class CustomBot(Bot):
     maintenance: bool
@@ -45,12 +45,7 @@ bot: CustomBot = CustomBot(command_prefix=COMMAND_PREFIX,
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} is connected')
-    while True:
-        clear_instances(Character)
-        print(Character._instances)
-        activity = Game(f'{len(Character._instances)} active players')
-        await bot.change_presence(activity=activity)
-        await sleep(12)
+    await gather(activity(bot))
 
 
 async def stop_trigger(message):
