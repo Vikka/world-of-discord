@@ -182,7 +182,7 @@ class Personnage(Cog):
                 "N'hésite pas à taper la commande \"!help "
                 "[lister|liste|list|personnages]\" pour avoir de l'aide.")
 
-    @command(name='fiche', aliases=['profil', 'sheet', 'personnage', 'perso'],
+    @command(name='fiche', aliases=['profil', 'sheet', 'personnage', 'perso', 'f', 'p', 's'],
              checks=[no_direct_message, in_command_channel])
     async def character_sheet(self, context: Context, *,
                               name: Optional[is_name] = None):
