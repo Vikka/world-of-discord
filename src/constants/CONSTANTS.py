@@ -3,11 +3,13 @@ STAT_BASE = 9
 DEFAULT_RANKING = 'membres'
 MEMBERS_RANKING = (DEFAULT_RANKING, 'membre', 'members', 'member', 'm')
 GUILDS_RANKING = ('guildes', 'guilde', 'guilds', 'guild', 'g')
+WORLD_RANKING = ('monde', 'world', 'global', 'w')
 RANKING_ARRAY = [
     MEMBERS_RANKING,
-    GUILDS_RANKING
+    GUILDS_RANKING,
+    WORLD_RANKING,
 ]
-RANKING = MEMBERS_RANKING + GUILDS_RANKING
+RANKING = MEMBERS_RANKING + GUILDS_RANKING + WORLD_RANKING
 
 DEFAULT_VALUE = 'niveaux'
 LEVEL_VALUE = (DEFAULT_VALUE, 'level', 'niv', 'lvl', 'n', 'l')
