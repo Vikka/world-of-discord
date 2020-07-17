@@ -61,11 +61,10 @@ def get_ranking(members, id_) -> Tuple[list, list, list]:
     values = list()
 
     for i, member in enumerate(members[:20], start=1):
-        flag = member.id == id_
-        borld_str = f'{"**" if flag else ""}'
-        numbers.append(f'{borld_str}{i}{borld_str}')
-        names.append(f'{borld_str}{member[1]}{borld_str}')
-        values.append(f'{borld_str}{member[2]:,}{borld_str}')
+        bold_str = f'{"**" if member.id == id_ else ""}'
+        numbers.append(f'{bold_str}{i}{bold_str}')
+        names.append(f'{bold_str}{member[1]}{bold_str}')
+        values.append(f'{bold_str}{member[2]:,}{bold_str}')
     return numbers, names, values
 
 
