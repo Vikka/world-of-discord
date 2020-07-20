@@ -1,18 +1,21 @@
 from __future__ import annotations
 
+import re
 from math import floor
+from pathlib import Path
 from random import choices
 from typing import Dict, Literal, Callable, Coroutine, Any, Tuple, Union
 
 from discord import Reaction, Message, Emoji, DMChannel, TextChannel
 
 from src.classes.Challenger import Challenger
-from src.classes.Character import Character
+from src.classes.Character import Character, store_characters
 from src.constants.EMOJIS import EMOJI_ATTACK, EMOJI_DEFENSE, EMOJI_FEINT, \
     EMOJI_NAME_ATTACK, EMOJI_NAME_DEFENSE, EMOJI_NAME_FEINT
 from src.constants.JSON_KEY import ELO, PVP1V1_TOTAL_GAMES, PVP1V1_TOTAL_LOSE, \
     PVP1V1_TOTAL_WIN
 from src.constants.PVP import ATTACK, DEFENSE, FEINT
+from src.elo.elo import compute_new_elo
 from src.utils.utils import first
 
 WIN = "Tu gagnes !"
@@ -45,6 +48,29 @@ class Player:
 def minus_life(defender, attacker) -> Tuple[int, bool]:
     defender -= floor(attacker)
     return defender, defender > 0
+
+
+REG = re.compile(r'([0-9]+)-([0-9]+)-.+')
+
+
+async def store_pvp_character(fight, dead, victorious):
+    d_elo = dead.elo
+    v_elo = victorious.elo
+    dead.elo = compute_new_elo(dead.pvp1v1_total_games,
+                               d_elo, v_elo, 0)
+    victorious.elo = compute_new_elo(victorious.pvp1v1_total_games,
+                                     v_elo, d_elo, 1)
+    res = REG.match(dead.id).groups()
+    for path in Path('./data/users').rglob(f'{res[1]}-{res[0]}.json'):
+        store_characters(str(path), {dead.id: dead})
+        print(path)
+
+    res = REG.match(victorious.id).groups()
+    for path in Path('./data/users').rglob(f'{res[1]}-{res[0]}.json'):
+        store_characters(str(path), {victorious.id: victorious})
+        print(path)
+    await fight.origin_channel.send(f'{victorious._name} vient de '
+                                    f'battre {dead._name} !')
 
 
 class PVP1V1:
@@ -157,7 +183,8 @@ class PVP1V1:
                 self.turn += 1
 
         # DEAD Resolve
-        i_dead: int = first(self.player_stat, lambda x: self.player_stat[x].life <= 0)
+        i_dead: int = first(self.player_stat,
+                            lambda x: self.player_stat[x].life <= 0)
         if i_dead is not None:
             dead: Character = self.switch.get(i_dead).character
             vict: Character = self.switch.get(-i_dead).character
@@ -165,13 +192,12 @@ class PVP1V1:
             dead.increment_stat(PVP1V1_TOTAL_LOSE)
             vict.increment_stat(PVP1V1_TOTAL_GAMES)
             vict.increment_stat(PVP1V1_TOTAL_WIN)
-            return dead, vict
-
+            await store_pvp_character(self, dead, vict)
+            return
         message: Message = await self.switch.get(self.first_player) \
             .member.send("A vous de jouer")
         fight_list[message.id] = self
         await self.add_combat_reaction(message)
-        return 0
 
     async def set_attack(self, channel: DMChannel):
         attacker = self.player_stat.get(self.first_player)

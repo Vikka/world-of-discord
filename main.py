@@ -81,28 +81,7 @@ async def on_reaction_add(reaction: Reaction, user: User):
     fight_list: Dict[int, PVP1V1] = bot.get_cog('PVP').fight_list
 
     if fight := fight_list.pop(message_id, None):
-        end = await fight.react(reaction, fight_list)
-        if end:
-            dead = end[0]
-            victorious = end[1]
-            d_elo = dead.elo
-            v_elo = victorious.elo
-            dead.elo = compute_new_elo(dead.pvp1v1_total_games,
-                                       d_elo, v_elo, 0)
-            victorious.elo = compute_new_elo(victorious.pvp1v1_total_games,
-                                             v_elo, d_elo, 1)
-            res = REG.match(dead.id).groups()
-            for path in Path('./data/users').rglob(f'{res[1]}-{res[0]}.json'):
-                store_characters(str(path), {dead.id: dead})
-                print(path)
-
-            res = REG.match(victorious.id).groups()
-            for path in Path('./data/users').rglob(f'{res[1]}-{res[0]}.json'):
-                store_characters(str(path), {victorious.id: victorious})
-                print(path)
-            await fight.origin_channel.send(f'{victorious._name} vient de '
-                                            f'battre {dead._name} !')
-        return
+        await fight.react(reaction, fight_list)
 
 
 if __name__ == '__main__':
