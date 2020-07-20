@@ -1,7 +1,7 @@
 ---
 name: EN - Feature request
 about: Suggest an idea for this project
-title: "[REQUEST]"
+title: ""
 labels: enhancement
 assignees: Vikka
 

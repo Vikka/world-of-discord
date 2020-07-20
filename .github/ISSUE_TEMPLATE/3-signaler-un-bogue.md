@@ -1,7 +1,7 @@
 ---
 name: FR - Signaler un bogue
 about: Créer un rapport pour contribuer à l'amélioration
-title: "[BUG]"
+title: ""
 labels: bug
 assignees: Vikka
 

@@ -1,7 +1,7 @@
 ---
 name: FR - Demande de fonctionnalité
 about: Suggérer une idée pour le projet
-title: "[REQUEST]"
+title: ""
 labels: enhancement
 assignees: Vikka
 
