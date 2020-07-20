@@ -68,7 +68,7 @@ class Personnage(Cog):
         Attention, la taille du nom et du prénom doit être comprise entre
         2 et 15 caractères.
 
-        Exemples (penses à ajouter le préfixe de commande !):
+        Exemples (pense à ajouter le préfixe de commande !):
             créer Leroy
             create Leroy Jenkins
         """
@@ -192,7 +192,7 @@ class Personnage(Cog):
         Te permet d'afficher la fiche d'un personnage lié au serveur sur lequel
         tu effectues cette commande.
 
-        Exemples (penses à ajouter le préfixe de commande !):
+        Exemples (pense à ajouter le préfixe de commande !):
             fiche
             profil Leroy
             personnage Leroy Jenkins
@@ -254,7 +254,7 @@ class Personnage(Cog):
             - 'rares', 'rare', 'r',
             - 'duels', 'duel', 'dudu', 'd'.
 
-        Exemples (penses à ajouter le préfixe de commande !):
+        Exemples (pense à ajouter le préfixe de commande !):
             classement
             rank world
             classement guildes duels
