@@ -2,7 +2,7 @@ from discord.ext.commands import Bot, Cog, command, Context
 
 from src.commands.utils import no_direct_message, in_command_channel
 from src.constants.INFO import GITHUB_PROJECT
-from src.constants.INFORMATIONS import ISSUE_TEMPLATE_TEXT
+from src.constants.INFORMATIONS import ENHANCEMENT_LIST_TEXT, BUG_LIST_TEXT
 
 
 class Informations(Cog):
@@ -19,17 +19,24 @@ class Informations(Cog):
         """
         await context.channel.send(GITHUB_PROJECT)
 
-    @command(name='issues', aliases=['issue', 'i'],
+    @command(name='bogues', aliases=['bogue', 'bug', 'issues', 'issue', 'b',
+                                     'i'],
              checks=[in_command_channel])
     async def issue(self, context: Context):
         """
-        Lien pour demander des fonctionnalités ou remonter des bogues.
-
-        Les modèles d'issues sont traduits. Si vous souhaitez faire votre
-        commentaire en français, pensez à sélectionner une issue précédée par
-        les lettres "FR", les isntructions sont traduites pour vous aider.
+        Lien pour consulter/contribuer à la liste des bogues.
         """
-        await context.send(ISSUE_TEMPLATE_TEXT)
+        await context.send(BUG_LIST_TEXT)
+
+    @command(name='améliorations', aliases=['amélioration', 'enhancements',
+                                            'enhancement', 'a', 'e'],
+             checks=[in_command_channel])
+    async def enhancement(self, context: Context):
+        """
+        Lien pour consulter/contribuer à la liste des améliorations.
+        """
+        await context.send(ENHANCEMENT_LIST_TEXT)
+
 
 def setup(bot):
     bot.add_cog(Informations(bot))

@@ -1,11 +1,11 @@
-ISSUE_TEMPLATE_LINK = \
-    'https://github.com/Vikka/world-of-discord/issues/new/choose'
-ISSUE_TEMPLATE_TEXT = "Que tu souhaites remonter un problème, un bogue, " \
-                      "ou demander une nouvelle fonctionnalité, tu dois " \
-                      "suivre ce lien.\n" \
-                      "Il s'y trouve une liste de modèles " \
-                      "ayant pour objectif de t'aider dans la redaction " \
-                      f"de ta demande.\n\n" \
-                      f"⚠️ Pour pouvoir envoyer ta demande, tu dois avoir un " \
-                      f"compte utilisateur sur ce site.\n\n" \
-                      f"{ISSUE_TEMPLATE_LINK}"
+BUG_LIST_LINK = 'https://github.com/Vikka/world-of-discord/labels/bug'
+BUG_LIST_TEXT = "Voici le lien qui te permet de consulter la liste des " \
+                "bogues connus. Si tu en constate un qui n'est pas dans la " \
+                "liste, n'hésite pas à le soumettre !\n\n" \
+                f"{BUG_LIST_LINK}"
+ENHANCEMENT_LIST_LINK = 'https://github.com/Vikka/world-of-discord/labels/bug'
+ENHANCEMENT_LIST_TEXT = "Voici le lien qui te permet de consulter la liste " \
+                        "des améliorations proposées. Si tu as une idée qui " \
+                        "mériterais de s'y trouver, n'hésite pas à la " \
+                        "soumettre !\n\n" \
+                        f"{ENHANCEMENT_LIST_LINK}"
